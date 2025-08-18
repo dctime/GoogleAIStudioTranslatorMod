@@ -14,21 +14,55 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 @EventBusSubscriber(value = Dist.CLIENT, modid = GeminiTranslatorClient.MODID)
 public class FTBQuestEvent {
 
+
+
     @SubscribeEvent
-    public static void renderEvent(ScreenEvent.Render.Pre event) {
+    public static void renderEvent(ScreenEvent.Render.Post event) {
         findFTBQuest(event);
     }
 
-    public static void findFTBQuest(ScreenEvent.Render.Pre event) {
-        if(!(event.getScreen() instanceof IScreenWrapper isw)) return;
-        if(!(isw.getGui() instanceof QuestScreen questScreen)) return;
-        Quest quest = questScreen.getViewedQuest();
-        if(quest == null) return;
-        if (quest.getTitle() instanceof MutableComponent titleComponent) {
-//            titleComponent.append("HEYYYYY");
-            System.out.println(titleComponent.getString());
-            quest.setRawTitle(titleComponent.getString() + " Bruhhhh");
+    @SubscribeEvent
+    public static void renderEventPost(ScreenEvent.Render.Post event) {
+        resetFTBQuest(event);
+    }
 
+    private static Quest cachedQuest = null;
+    private static String cachedTitle = null;
+
+    public static void findFTBQuest(ScreenEvent.Render.Post event) {
+        if(!(event.getScreen() instanceof IScreenWrapper isw)) {
+            failedToFindFTBQuest();
+            return;
         }
+        if(!(isw.getGui() instanceof QuestScreen questScreen)) {
+            failedToFindFTBQuest();
+            return;
+        }
+        Quest quest = questScreen.getViewedQuest();
+        if (quest == null) {
+            failedToFindFTBQuest();
+            return;
+        }
+
+        if (cachedTitle != null) return;
+        cachedQuest = quest;
+        cachedTitle = quest.getRawTitle();
+        quest.setRawTitle("UHHUHUHU");
+        questScreen.refreshViewQuestPanel();
+    }
+
+    public static void failedToFindFTBQuest() {
+        cachedTitle = null;
+        cachedQuest = null;
+    }
+
+    public static void resetFTBQuest(ScreenEvent.Render.Post event) {
+//        if(!(event.getScreen() instanceof IScreenWrapper isw)) return;
+//        if(!(isw.getGui() instanceof QuestScreen questScreen)) return;
+//        Quest quest = questScreen.getViewedQuest();
+//        if(quest == null) return;
+//        quest.setRawTitle("Hello");
+
+
     }
 }
