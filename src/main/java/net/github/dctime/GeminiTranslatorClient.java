@@ -9,6 +9,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import com.google.genai.Client;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = GeminiTranslatorClient.MODID, dist = Dist.CLIENT)
@@ -21,6 +22,7 @@ public class GeminiTranslatorClient {
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
         // Do not forget to add translations for your config options to the en_us.json file.
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        Client client = Client.builder().apiKey("KEY").build();
     }
 
     @SubscribeEvent

@@ -20,6 +20,7 @@ group = mod_group_id
 repositories {
     // Add here additional repositories if required by some of the dependencies below.
     // JEI
+    mavenCentral()
     maven {
         // location of the maven that hosts JEI files since January 2023
         name = "Jared's maven"
@@ -169,6 +170,8 @@ dependencies {
     implementation "curse.maven:ftb-library-forge-404465:6229316"
     //https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge
     implementation "curse.maven:ftb-quests-neoforge-289412:6167037"
+
+    implementation "com.google.genai:google-genai:1.0.0"
 
 
 }
