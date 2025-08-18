@@ -64,7 +64,6 @@ neoForge {
     runs {
         client {
             client()
-
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
@@ -170,9 +169,6 @@ dependencies {
     implementation "curse.maven:ftb-library-forge-404465:6229316"
     //https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge
     implementation "curse.maven:ftb-quests-neoforge-289412:6167037"
-
-    implementation "com.google.genai:google-genai:1.0.0"
-
 
 }
 

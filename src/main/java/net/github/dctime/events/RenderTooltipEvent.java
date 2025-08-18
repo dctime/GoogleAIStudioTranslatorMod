@@ -2,12 +2,15 @@ package net.github.dctime.events;
 
 import com.mojang.datafixers.util.Either;
 import net.github.dctime.GeminiTranslatorClient;
+import net.github.dctime.libs.Translator;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @EventBusSubscriber(modid = GeminiTranslatorClient.MODID, value = Dist.CLIENT)
 public class RenderTooltipEvent {
@@ -21,16 +24,37 @@ public class RenderTooltipEvent {
 //        }
 //    }
 
+    private static HashMap<String, String> translationCache = new HashMap<>();
+
     @SubscribeEvent
     public static void onRenderTooltip(net.neoforged.neoforge.client.event.RenderTooltipEvent.GatherComponents event) {
         var elements = event.getTooltipElements();
+
         for (int i = 0; i < elements.size(); i++) {
             var e = elements.get(i);
             int finalI = i;
             e.ifLeft(text -> {
                 String original = text.getString();
+                String translated;
+                if (translationCache.containsKey(original))
+                    translated = translationCache.get(original);
+                else {
+                    try {
+                        translated = Translator.translateToTraditionalChinese(original);
+                    } catch (IOException ex) {
+                        translated = "Try Again Later";
+                    } catch (InterruptedException ex) {
+                        translated = "Try Again Later";
+                    }
+                    if (translated == null) return;
+                    translationCache.put(original, translated);
+                }
+                Component replaced;
+                if (text instanceof Component textComponent)
+                    replaced = Component.literal(translated).setStyle(textComponent.getStyle());
+                else
                 // Example transformation: prepend and uppercase
-                Component replaced = Component.literal("[MOD] " + original.toUpperCase());
+                    replaced = Component.literal(translated);
                 elements.set(finalI, Either.left(replaced));
             });
         }

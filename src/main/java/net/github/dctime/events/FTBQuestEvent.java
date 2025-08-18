@@ -4,65 +4,64 @@ import dev.ftb.mods.ftblibrary.ui.IScreenWrapper;
 import dev.ftb.mods.ftbquests.client.gui.quests.QuestScreen;
 import dev.ftb.mods.ftbquests.quest.Quest;
 import net.github.dctime.GeminiTranslatorClient;
+import net.github.dctime.libs.Translator;
 import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 
+import java.io.IOException;
+
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = GeminiTranslatorClient.MODID)
 public class FTBQuestEvent {
 
-
-
     @SubscribeEvent
-    public static void renderEvent(ScreenEvent.Render.Post event) {
-        findFTBQuest(event);
+    public static void renderEvent(ScreenEvent.Render.Post event) throws IOException, InterruptedException {
+        tryTranslateFTBQuest(event);
     }
 
-    @SubscribeEvent
-    public static void renderEventPost(ScreenEvent.Render.Post event) {
-        resetFTBQuest(event);
-    }
-
-    private static Quest cachedQuest = null;
     private static String cachedTitle = null;
+    private static Quest cachedQuest = null;
 
-    public static void findFTBQuest(ScreenEvent.Render.Post event) {
+    public static void tryTranslateFTBQuest(ScreenEvent.Render.Post event) throws IOException, InterruptedException {
         if(!(event.getScreen() instanceof IScreenWrapper isw)) {
-            failedToFindFTBQuest();
+            failedToFindFTBQuest(null);
             return;
         }
         if(!(isw.getGui() instanceof QuestScreen questScreen)) {
-            failedToFindFTBQuest();
-            return;
-        }
-        Quest quest = questScreen.getViewedQuest();
-        if (quest == null) {
-            failedToFindFTBQuest();
+            failedToFindFTBQuest(null);
             return;
         }
 
-        if (cachedTitle != null) return;
-        cachedQuest = quest;
+        Quest quest = questScreen.getViewedQuest();
+
+        if (quest == null) {
+            failedToFindFTBQuest(questScreen);
+            return;
+        }
+
+        if (cachedTitle != null || cachedQuest != null) return;
+        if (quest.getRawTitle().isBlank()) return;
+
         cachedTitle = quest.getRawTitle();
-        quest.setRawTitle("UHHUHUHU");
+        cachedQuest = quest;
+        System.out.println("Title:" + cachedTitle);
+        String translatedTitle = Translator.translateToTraditionalChinese(cachedTitle);
+        if (translatedTitle == null) return;
+        quest.setRawTitle(translatedTitle);
         questScreen.refreshViewQuestPanel();
     }
 
-    public static void failedToFindFTBQuest() {
+    public static void failedToFindFTBQuest(QuestScreen screen) {
+        if (cachedQuest != null) {
+            cachedQuest.setRawTitle(cachedTitle);
+            if (screen != null)
+                screen.refreshQuestPanel();
+        }
+
         cachedTitle = null;
         cachedQuest = null;
-    }
-
-    public static void resetFTBQuest(ScreenEvent.Render.Post event) {
-//        if(!(event.getScreen() instanceof IScreenWrapper isw)) return;
-//        if(!(isw.getGui() instanceof QuestScreen questScreen)) return;
-//        Quest quest = questScreen.getViewedQuest();
-//        if(quest == null) return;
-//        quest.setRawTitle("Hello");
-
-
     }
 }
