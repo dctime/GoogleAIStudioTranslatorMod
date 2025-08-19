@@ -48,8 +48,14 @@ public class Translator {
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
 //
+        if (textInEnglish.isBlank()) {
+            translationCache.put(textInEnglish, "");
+            return;
+        }
+
         if (translating) return;
         translating = true;
+
         client.sendAsync(req, HttpResponse.BodyHandlers.ofString())
                 .thenAccept(resp->{
                     String responseText = resp.body();
