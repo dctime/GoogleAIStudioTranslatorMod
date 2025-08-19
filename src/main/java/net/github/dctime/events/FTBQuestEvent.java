@@ -14,10 +14,9 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 import java.io.IOException;
 
 
-@EventBusSubscriber(value = Dist.CLIENT, modid = GeminiTranslatorClient.MODID)
+//@EventBusSubscriber(value = Dist.CLIENT, modid = GeminiTranslatorClient.MODID)
 public class FTBQuestEvent {
 
-    @SubscribeEvent
     public static void renderEvent(ScreenEvent.Render.Post event) throws IOException, InterruptedException {
         tryTranslateFTBQuest(event);
     }
@@ -48,9 +47,9 @@ public class FTBQuestEvent {
         cachedTitle = quest.getRawTitle();
         cachedQuest = quest;
         System.out.println("Title:" + cachedTitle);
-        String translatedTitle = Translator.translateToTraditionalChinese(cachedTitle);
-        if (translatedTitle == null) return;
-        quest.setRawTitle(translatedTitle);
+//        String translatedTitle = Translator.translateToTraditionalChinese(cachedTitle);
+//        if (translatedTitle == null) return;
+//        quest.setRawTitle(translatedTitle);
         questScreen.refreshViewQuestPanel();
     }
 

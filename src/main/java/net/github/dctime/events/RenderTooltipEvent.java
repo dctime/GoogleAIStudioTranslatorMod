@@ -24,8 +24,6 @@ public class RenderTooltipEvent {
 //        }
 //    }
 
-    private static HashMap<String, String> translationCache = new HashMap<>();
-
     @SubscribeEvent
     public static void onRenderTooltip(net.neoforged.neoforge.client.event.RenderTooltipEvent.GatherComponents event) {
         var elements = event.getTooltipElements();
@@ -36,18 +34,19 @@ public class RenderTooltipEvent {
             e.ifLeft(text -> {
                 String original = text.getString();
                 String translated;
-                if (translationCache.containsKey(original))
-                    translated = translationCache.get(original);
+                if (Translator.translationCache.containsKey(original))
+                    translated = Translator.translationCache.get(original);
                 else {
                     try {
-                        translated = Translator.translateToTraditionalChinese(original);
+                        Translator.requestTranslateToTraditionalChinese(original);
                     } catch (IOException ex) {
-                        translated = "Try Again Later";
+                        System.out.println("IO Exception while translating: " + ex.getMessage());
                     } catch (InterruptedException ex) {
-                        translated = "Try Again Later";
+                        System.out.println("Interrupted Exception while translating: " + ex.getMessage());
                     }
-                    if (translated == null) return;
-                    translationCache.put(original, translated);
+                    return;
+//                    if (translated == null) return;
+//                    translationCache.put(original, translated);
                 }
                 Component replaced;
                 if (text instanceof Component textComponent)

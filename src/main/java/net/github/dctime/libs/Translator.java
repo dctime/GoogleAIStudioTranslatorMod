@@ -11,12 +11,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.HashMap;
 
 public class Translator {
-    public static String translateToTraditionalChinese(String textInEnglish) throws IOException, InterruptedException {
-        if (textInEnglish.isBlank()) return "";
+    public static HashMap<String, String> translationCache = new HashMap<>();
+    public static boolean translating = false;
+    public static void requestTranslateToTraditionalChinese(String textInEnglish) throws IOException, InterruptedException {
         String apiKey = Config.API_KEY.get();
-        if (apiKey.isBlank()) return "API Key is not set. Please set it in the config file.";
+        if (apiKey.isBlank()) return;
 
         String model = "gemma-3n-e4b-it";
         String url = String.format("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent", model);
@@ -31,7 +33,7 @@ public class Translator {
                   ]
                 }
                 """;
-        String translatedText;
+
 
 //
         HttpClient client = HttpClient.newBuilder()
@@ -46,30 +48,34 @@ public class Translator {
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
 //
-        HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
-        System.out.println("status: " + resp.statusCode());
+        if (translating) return;
+        translating = true;
+        client.sendAsync(req, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(resp->{
+                    String responseText = resp.body();
+                    Gson gson = new Gson();
+                    JsonObject response = gson.fromJson(responseText, JsonObject.class);
+                    String translatedText;
 
+                    try {
+                        translatedText = response.getAsJsonArray("candidates")
+                                .get(0).getAsJsonObject()
+                                .getAsJsonObject("content")
+                                .getAsJsonArray("parts")
+                                .get(0).getAsJsonObject()
+                                .get("text").getAsString();
+                    } catch (Exception e) {
+                        translatedText = null;
+                        System.out.println("Error Response:" + responseText);
 
-        GuardedSerializer serializer = new GuardedSerializer();
-        String responseText = resp.body();
-        Gson gson = new Gson();
-        JsonObject response = gson.fromJson(responseText, JsonObject.class);
+                    }
+                    if (translatedText != null) {
+                        translationCache.put(textInEnglish, translatedText);
+                        System.out.println("Translated: " + textInEnglish + " -> " + translatedText);
+                    }
 
-
-        try {
-            translatedText = response.getAsJsonArray("candidates")
-                    .get(0).getAsJsonObject()
-                    .getAsJsonObject("content")
-                    .getAsJsonArray("parts")
-                    .get(0).getAsJsonObject()
-                    .get("text").getAsString();
-        } catch (Exception e) {
-            translatedText = null;
-            System.out.println("Error Response:" + responseText);
-        }
-
-
-//        System.out.println("Translated: " + textInEnglish + " -> " + translatedText);
-        return translatedText;
+                    System.out.println("status: " + resp.statusCode());
+                    translating = false;
+                });
     }
 }
