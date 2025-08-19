@@ -3,7 +3,9 @@ package net.github.dctime.events;
 import com.mojang.datafixers.util.Either;
 import net.github.dctime.GeminiTranslatorClient;
 import net.github.dctime.libs.Translator;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -23,7 +25,7 @@ public class RenderTooltipEvent {
 //            });
 //        }
 //    }
-
+    private static final Style translatedStyle = Style.EMPTY.withColor(ChatFormatting.GRAY);
     @SubscribeEvent
     public static void onRenderTooltip(net.neoforged.neoforge.client.event.RenderTooltipEvent.GatherComponents event) {
         var elements = event.getTooltipElements();
@@ -49,11 +51,19 @@ public class RenderTooltipEvent {
 //                    translationCache.put(original, translated);
                 }
                 Component replaced;
+                // 移除換行符號
+                translated = translated.replace("\n", " ");
+
+                // 移除控制字符（避免顯示方框）
+                translated = translated.replaceAll("\\p{Cntrl}", "");
+
+                // 去掉首尾空白
+                translated = translated.trim();
                 if (text instanceof Component textComponent)
-                    replaced = Component.literal(translated).setStyle(textComponent.getStyle());
+                    replaced = textComponent.copy().append(Component.literal(" " + translated).setStyle(translatedStyle));
                 else
                 // Example transformation: prepend and uppercase
-                    replaced = Component.literal(translated);
+                    replaced = Component.literal(text.getString()).append(Component.literal(" " + translated).setStyle(translatedStyle));
                 elements.set(finalI, Either.left(replaced));
             });
         }
