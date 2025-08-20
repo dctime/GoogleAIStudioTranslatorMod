@@ -25,7 +25,6 @@ public class RenderTooltipEvent {
 //            });
 //        }
 //    }
-    private static final Style translatedStyle = Style.EMPTY.withColor(ChatFormatting.GRAY);
     @SubscribeEvent
     public static void onRenderTooltip(net.neoforged.neoforge.client.event.RenderTooltipEvent.GatherComponents event) {
         var elements = event.getTooltipElements();
@@ -60,10 +59,10 @@ public class RenderTooltipEvent {
                 // 去掉首尾空白
                 translated = translated.trim();
                 if (text instanceof Component textComponent)
-                    replaced = textComponent.copy().append(Component.literal(" " + translated).setStyle(translatedStyle));
+                    replaced = textComponent.copy().append(Component.literal(" " + translated).setStyle(Translator.translatedStyle));
                 else
                 // Example transformation: prepend and uppercase
-                    replaced = Component.literal(text.getString()).append(Component.literal(" " + translated).setStyle(translatedStyle));
+                    replaced = Component.literal(text.getString()).append(Component.literal(" " + translated).setStyle(Translator.translatedStyle));
                 elements.set(finalI, Either.left(replaced));
             });
         }

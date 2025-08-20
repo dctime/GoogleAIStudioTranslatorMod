@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "net.github.dctime.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+
+  ],
+  "client": [
+    "ViewQuestPanelMixin",
+    "TextFieldMixin",
+    "QuestPanelMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
