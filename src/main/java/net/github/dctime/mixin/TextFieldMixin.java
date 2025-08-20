@@ -38,8 +38,9 @@ public abstract class TextFieldMixin extends Widget implements FormattedTextGett
             throw new IndexOutOfBoundsException("Index out of bounds for formattedText array");
         }
 
-        Component newComponent = Component.literal(text).setStyle(Translator.translatedStyle);
-        formattedText[index] = newComponent;
+//        FormattedText newFormattedText = (FormattedText) Component.literal(text).setStyle(Translator.translatedStyle);
+        FormattedText newFormattedText = FormattedText.composite(formattedText[index], (FormattedText) Component.literal(" " + text).setStyle(Translator.translatedStyle));
+        formattedText[index] = newFormattedText;
 
     }
 }

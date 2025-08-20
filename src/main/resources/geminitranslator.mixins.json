@@ -8,7 +8,8 @@
   "client": [
     "ViewQuestPanelMixin",
     "TextFieldMixin",
-    "QuestPanelMixin"
+    "QuestPanelMixin",
+    "QuestDescriptionFieldMixin"
   ],
   "injectors": {
     "defaultRequire": 1
