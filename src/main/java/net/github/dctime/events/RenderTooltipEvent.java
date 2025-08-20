@@ -50,14 +50,7 @@ public class RenderTooltipEvent {
 //                    translationCache.put(original, translated);
                 }
                 Component replaced;
-                // 移除換行符號
-                translated = translated.replace("\n", " ");
 
-                // 移除控制字符（避免顯示方框）
-                translated = translated.replaceAll("\\p{Cntrl}", "");
-
-                // 去掉首尾空白
-                translated = translated.trim();
                 if (text instanceof Component textComponent)
                     replaced = textComponent.copy().append(Component.literal(" " + translated).setStyle(Translator.translatedStyle));
                 else

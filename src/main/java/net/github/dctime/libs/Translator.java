@@ -103,6 +103,12 @@ public class Translator {
 
                     }
                     if (translatedText != null) {
+                        // 移除換行符號
+                        translatedText = translatedText.replace("\n", " ");
+                        // 移除控制字符（避免顯示方框）
+                        translatedText = translatedText.replaceAll("\\p{Cntrl}", "");
+                        // 去掉首尾空白
+                        translatedText = translatedText.trim();
                         translationCache.put(textInEnglish, translatedText);
                         System.out.println("Translated: " + textInEnglish + " -> " + translatedText);
                     }
