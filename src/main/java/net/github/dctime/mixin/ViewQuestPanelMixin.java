@@ -195,13 +195,13 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         // setup isDescriptionTranslated
         if (isDescriptionTranslated == null) {
             isDescriptionTranslated = new ArrayList<>(panelText.getWidgets().size());
-            translationLeft = panelText.getWidgets().size();
+            translationLeft = 0;
             for (int widgetIndex = 0; widgetIndex < panelText.getWidgets().size(); widgetIndex++) {
                 if (panelText.getWidgets().get(widgetIndex) instanceof FormattedTextGetterSetter) {
                     isDescriptionTranslated.add(false);
+                    translationLeft++;
                 } else {
                     isDescriptionTranslated.add(true);
-                    translationLeft--;
                 }
             }
             return;
