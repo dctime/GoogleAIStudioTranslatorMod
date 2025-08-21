@@ -2,13 +2,12 @@ package net.github.dctime.mixin;
 
 import dev.ftb.mods.ftblibrary.ui.Panel;
 import dev.ftb.mods.ftblibrary.ui.TextField;
+import dev.ftb.mods.ftblibrary.ui.Theme;
 import dev.ftb.mods.ftblibrary.ui.Widget;
 import net.github.dctime.libs.FormattedTextGetterSetter;
 import net.github.dctime.libs.Translator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,6 +18,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class TextFieldMixin extends Widget implements FormattedTextGetterSetter {
     @Shadow
     private FormattedText[] formattedText;
+
+    @Shadow
+    private Component rawText;
+    private FormattedText rawTranslatedText;
+
+    @Shadow
+    public abstract TextField reflow();
+
+    @Shadow
+    public abstract TextField resize(Theme theme);
+
+    @Shadow
+    public int maxWidth;
 
     public TextFieldMixin(Panel p) {
         super(p);
@@ -33,14 +45,11 @@ public abstract class TextFieldMixin extends Widget implements FormattedTextGett
         return formattedText;
     }
 
-    public void setFormattedText(int index, String text) {
-        if (index < 0 || index >= formattedText.length) {
-            throw new IndexOutOfBoundsException("Index out of bounds for formattedText array");
-        }
-
-//        FormattedText newFormattedText = (FormattedText) Component.literal(text).setStyle(Translator.translatedStyle);
-        FormattedText newFormattedText = FormattedText.composite(formattedText[index], (FormattedText) Component.literal(" " + text).setStyle(Translator.translatedStyle));
-        formattedText[index] = newFormattedText;
-
+    public void setTranslatedFormattedText(String text) {
+        rawTranslatedText = FormattedText.of(" " + text, Translator.translatedStyle);
+        // reflow with the translated text
+        Theme theme = this.getGui().getTheme();
+        this.formattedText = (FormattedText[])theme.listFormattedStringToWidth(FormattedText.composite(this.rawText, rawTranslatedText), this.maxWidth).toArray(new FormattedText[0]);
+        resize(theme);
     }
 }

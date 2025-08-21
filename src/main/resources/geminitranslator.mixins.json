@@ -9,7 +9,10 @@
     "ViewQuestPanelMixin",
     "TextFieldMixin",
     "QuestPanelMixin",
-    "QuestDescriptionFieldMixin"
+    "QuestDescriptionFieldMixin",
+    "BaseScreenMixin",
+    "CloseViewQuestButtonMixin",
+    "PinViewQuestButtonMixin"
   ],
   "injectors": {
     "defaultRequire": 1
