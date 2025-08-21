@@ -93,11 +93,12 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
                 int width = Math.max(200, this.titleField.width + 54);
                 if (this.quest.getMinWidth() > 0) {
                     width = Math.max(this.quest.getMinWidth(), width);
-                } else if (this.questScreen.getSelectedChapter().isPresent()) {
-                    if (this.questScreen.getSelectedChapter().get().getDefaultMinWidth() > 0) {
-                        width = Math.max(this.questScreen.getSelectedChapter().get().getDefaultMinWidth(), width);
-                    }
                 }
+//                else if (this.questScreen.getSelectedChapter().isPresent()) {
+//                    if (this.questScreen.getSelectedChapter().get().getDefaultMinWidth() > 0) {
+//                        width = Math.max(this.questScreen.getSelectedChapter().get().getDefaultMinWidth(), width);
+//                    }
+//                }
                 this.setWidth(Math.max(width, this.getWidth()));
 //                this.panelContent.setPosAndSize(0, Math.max(16, this.titleField.height + 8), this.getWidth(), 0);
 //                this.panelContent.setHeight(this.height - 17);
