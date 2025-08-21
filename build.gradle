@@ -168,7 +168,7 @@ dependencies {
     //https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge
     implementation "curse.maven:ftb-library-forge-404465:6874538"
     //https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge
-    implementation "curse.maven:ftb-quests-forge-289412:6874989"
+    implementation "curse.maven:ftb-quests-forge-289412:6721642"
 
 }
 

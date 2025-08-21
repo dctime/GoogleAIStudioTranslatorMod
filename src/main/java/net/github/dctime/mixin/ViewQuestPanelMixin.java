@@ -216,13 +216,14 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
             if (!(widget instanceof FormattedTextGetterSetter formattedTextGetter)) return;
             if (translateFormattedText(formattedTextGetter)) {
                 isDescriptionTranslated.set(widgetIndex, true);
+                resizeUI();
                 translationLeft--;
             }
         }
 
         if (translationLeft == 0) {
             translationLeft = -1;
-            resizeUI();
+
         }
     }
 
