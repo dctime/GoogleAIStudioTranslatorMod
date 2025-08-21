@@ -1,6 +1,7 @@
 package net.github.dctime.events;
 
 import com.mojang.datafixers.util.Either;
+import net.github.dctime.Config;
 import net.github.dctime.GeminiTranslatorClient;
 import net.github.dctime.libs.Translator;
 import net.minecraft.ChatFormatting;
@@ -20,6 +21,7 @@ public class RenderTooltipEvent {
     private static final Logger LOGGER = LoggerFactory.getLogger(RenderTooltipEvent.class);
     @SubscribeEvent
     public static void onRenderTooltip(net.neoforged.neoforge.client.event.RenderTooltipEvent.GatherComponents event) {
+        if (!Config.ENABLE_TOOLTIP_TRANSLATION.get()) return;
         var elements = event.getTooltipElements();
 
         for (int i = 0; i < elements.size(); i++) {

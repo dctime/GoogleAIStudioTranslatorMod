@@ -26,8 +26,20 @@ public class Config {
 //            .defineInRange("magicNumber", 42, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.ConfigValue<String> API_KEY = BUILDER
-            .comment("The API KEY from Google AI Studio")
-            .define("Google AI Studio", "");
+            .comment("The API KEY from Google AI Studio [Google AI Studio 的 API KEY]")
+            .define("Google AI Studio API KEY", "");
+
+    public static final ModConfigSpec.ConfigValue<String> MODEL_NAME = BUILDER
+            .comment("The model name to use for translation [使用的Google AI Studio模型] (免費仔可以用Gemmma像是 gemma-3-27b-it)")
+            .define("Google AI Studio Model Name", "gemma-3-27b-it");
+
+    public static final ModConfigSpec.BooleanValue ENABLE_TOOLTIP_TRANSLATION = BUILDER
+        .comment("Whether to enable tooltip translation [滑鼠滑在物品上等是否啟用翻譯]")
+        .define("Enable Tooltip Translation", true);
+
+    public static final ModConfigSpec.BooleanValue ENABLE_FTB_QUEST_TRANSLATION = BUILDER
+            .comment("Whether to enable FTB Quests translation [是否啟用 FTB Quests 翻譯]")
+            .define("Enable FTB Quests Translation", true);
 
     // a list of strings that are treated as resource locations for items
 //    public static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER

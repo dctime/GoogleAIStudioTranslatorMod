@@ -37,7 +37,8 @@ public class Translator {
 
     @Nullable
     private static HttpRequest setupRequest(String textInEnglish) {
-        String model = "gemma-3-27b-it";
+//        String model = "gemma-3-27b-it";
+        String model = Config.MODEL_NAME.get();
         String url = String.format("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent", model);
 //
         String prompt = "你是一個英翻中的工具 請翻成繁體中文 Minecraft相關" +

@@ -4,6 +4,7 @@ import dev.ftb.mods.ftblibrary.ui.*;
 import dev.ftb.mods.ftblibrary.ui.misc.CompactGridLayout;
 import dev.ftb.mods.ftbquests.client.gui.quests.*;
 import dev.ftb.mods.ftbquests.quest.Quest;
+import net.github.dctime.Config;
 import net.github.dctime.GeminiTranslatorClient;
 import net.github.dctime.libs.*;
 import net.minecraft.client.gui.GuiGraphics;
@@ -181,6 +182,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
 
     @Inject(method = "draw", at = @At("HEAD"))
     public void onDraw(GuiGraphics graphics, Theme theme, int x, int y, int w, int h, CallbackInfo ci) {
+        if (!Config.ENABLE_FTB_QUEST_TRANSLATION.get()) return;
         translateTitle();
 
         // setup isDescriptionTranslated
