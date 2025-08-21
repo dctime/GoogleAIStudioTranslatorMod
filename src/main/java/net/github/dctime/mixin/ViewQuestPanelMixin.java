@@ -1,25 +1,12 @@
 package net.github.dctime.mixin;
 
-import dev.ftb.mods.ftblibrary.icon.Color4I;
-import dev.ftb.mods.ftblibrary.icon.Icon;
 import dev.ftb.mods.ftblibrary.ui.*;
 import dev.ftb.mods.ftblibrary.ui.misc.CompactGridLayout;
 import dev.ftb.mods.ftbquests.client.gui.quests.*;
 import dev.ftb.mods.ftbquests.quest.Quest;
-import dev.ftb.mods.ftbquests.quest.QuestLink;
-import dev.ftb.mods.ftbquests.quest.QuestObjectBase;
-import dev.ftb.mods.ftbquests.quest.reward.Reward;
-import dev.ftb.mods.ftbquests.quest.reward.RewardAutoClaim;
-import dev.ftb.mods.ftbquests.quest.task.Task;
-import dev.ftb.mods.ftbquests.quest.theme.QuestTheme;
-import dev.ftb.mods.ftbquests.quest.theme.property.ThemeProperties;
-import dev.ftb.mods.ftbquests.quest.translation.TranslationKey;
-import dev.ftb.mods.ftbquests.util.TextUtils;
 import net.github.dctime.libs.*;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,8 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 @Mixin(ViewQuestPanel.class)
 public abstract class ViewQuestPanelMixin extends ModalPanel {
@@ -52,7 +37,8 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
     private BlankPanel panelContent;
 
 
-
+    @Shadow
+    private long lastScrollTime;
     private boolean isViewQuestPanelTranslated = false;
     private List<Boolean> isDescriptionTranslated = null;
     // -1 : standup, 0 : ready to resize, 1+: amount of translation left
@@ -217,13 +203,15 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
             if (translateFormattedText(formattedTextGetter)) {
                 isDescriptionTranslated.set(widgetIndex, true);
                 resizeUI();
+                this.updateMouseOver(this.getMouseX(), this.getMouseY());
                 translationLeft--;
             }
         }
 
         if (translationLeft == 0) {
             translationLeft = -1;
-
+        } else {
+            setScrollY(0);
         }
     }
 

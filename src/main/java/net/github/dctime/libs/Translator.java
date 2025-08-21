@@ -2,12 +2,8 @@ package net.github.dctime.libs;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.mojang.realmsclient.dto.GuardedSerializer;
-import dev.ftb.mods.ftblibrary.ui.TextField;
-import dev.ftb.mods.ftbquests.client.gui.quests.ViewQuestPanel;
 import net.github.dctime.Config;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 
 import javax.annotation.Nullable;
@@ -18,8 +14,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class Translator {
     public static HashMap<String, String> translationCache = new HashMap<>();
@@ -31,7 +25,6 @@ public class Translator {
 
     // --- ftb quest ---
 
-    public static TextField cachedTextField = null;
     public static final Style translatedStyle = Style.EMPTY.withColor(ChatFormatting.GRAY);
 
     @Nullable
