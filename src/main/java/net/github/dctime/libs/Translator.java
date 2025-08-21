@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.github.dctime.Config;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
 import javax.annotation.Nullable;
@@ -18,10 +20,13 @@ import java.util.HashMap;
 public class Translator {
     public static HashMap<String, String> translationCache = new HashMap<>();
     public static boolean translating = false;
-    public static boolean translatingTitle = false;
     private static final HttpClient CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .build();
+    private static boolean hasShowConnectionError = false;
+    private static boolean hasShowAPIKEYError = false;
+    private static boolean hasShowRequestTooFrequentError = false;
+    private static boolean hasShowOtherError = false;
 
     // --- ftb quest ---
 
@@ -44,7 +49,7 @@ public class Translator {
                 """;
 
         String apiKey = Config.API_KEY.get();
-        if (apiKey.isBlank()) return null;
+//        if (apiKey.isBlank()) return null; // TODO:
 
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -62,14 +67,12 @@ public class Translator {
         return req;
     }
 
-    public static void requestTranslateToTraditionalChinese(String textInEnglish) throws IOException, InterruptedException {
-
+public static void requestTranslateToTraditionalChinese(String textInEnglish) throws IOException, InterruptedException {
         HttpRequest req = setupRequest(textInEnglish);
         if (req == null) {
             System.out.println("Error when setting up request for translation.");
             return;
         }
-
         if (translating) {
             System.out.println("Translator in use.");
             return;
@@ -77,37 +80,86 @@ public class Translator {
         translating = true;
 
         CLIENT.sendAsync(req, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(resp -> {
-                    String responseText = resp.body();
-                    Gson gson = new Gson();
-                    JsonObject response = gson.fromJson(responseText, JsonObject.class);
-                    String translatedText;
-
+                .whenComplete((resp, throwable) -> {
                     try {
-                        translatedText = response.getAsJsonArray("candidates")
-                                .get(0).getAsJsonObject()
-                                .getAsJsonObject("content")
-                                .getAsJsonArray("parts")
-                                .get(0).getAsJsonObject()
-                                .get("text").getAsString();
-                    } catch (Exception e) {
-                        translatedText = null;
-                        System.out.println("Error Response:" + responseText);
+                        if (throwable != null) {
+                            System.out.println("Translation request failed: " + throwable.getMessage());
+                            Minecraft.getInstance().execute(() -> {
+                                if (Minecraft.getInstance().player != null && !hasShowConnectionError) {
+                                    Minecraft.getInstance().player.sendSystemMessage(
+                                            Component.literal("Translate failed! Check Your Internet Connection").withStyle(ChatFormatting.YELLOW));
+                                    Minecraft.getInstance().player.sendSystemMessage(
+                                            Component.literal("無法翻譯! 請檢查網路連線").withStyle(ChatFormatting.YELLOW));
+                                    hasShowConnectionError = true;
+                                }
+                            });
+                            return;
+                        }
+                        hasShowConnectionError = false;
+                        String responseText = resp.body();
+                        Gson gson = new Gson();
+                        JsonObject response = gson.fromJson(responseText, JsonObject.class);
+                        String translatedText = null;
 
-                    }
-                    if (translatedText != null) {
-                        // 移除換行符號
-                        translatedText = translatedText.replace("\n", " ");
-                        // 移除控制字符（避免顯示方框）
-                        translatedText = translatedText.replaceAll("\\p{Cntrl}", "");
-                        // 去掉首尾空白
-                        translatedText = translatedText.trim();
-                        translationCache.put(textInEnglish, translatedText);
-                        System.out.println("Translated: " + textInEnglish + " -> " + translatedText);
-                    }
+                        try {
+                            translatedText = response.getAsJsonArray("candidates")
+                                    .get(0).getAsJsonObject()
+                                    .getAsJsonObject("content")
+                                    .getAsJsonArray("parts")
+                                    .get(0).getAsJsonObject()
+                                    .get("text").getAsString();
+                        } catch (Exception e) {
+                            System.out.println("Error parsing response: " + responseText);
+                            if (resp.statusCode() == 403) {
+                                Minecraft.getInstance().execute(() -> {
+                                    if (Minecraft.getInstance().player != null && !hasShowAPIKEYError) {
+                                        Minecraft.getInstance().player.sendSystemMessage(
+                                                Component.literal("Translation failed! Check Your Google AI Studio Key in config!").withStyle(ChatFormatting.YELLOW));
+                                        Minecraft.getInstance().player.sendSystemMessage(
+                                                Component.literal("無法翻譯! 請檢查你的 config 資料夾的Google Ai Studio 之 API KEY").withStyle(ChatFormatting.YELLOW));
+                                        hasShowAPIKEYError = true;
+                                    }
+                                });
+                            } else if (resp.statusCode() == 429) {
+                                Minecraft.getInstance().execute(() -> {
+                                    if (Minecraft.getInstance().player != null && !hasShowRequestTooFrequentError) {
+                                        Minecraft.getInstance().player.sendSystemMessage(
+                                                Component.literal("Translation failed! You request too frequently and exceed your current quota (RPM)").withStyle(ChatFormatting.YELLOW));
+                                        Minecraft.getInstance().player.sendSystemMessage(
+                                                Component.literal("無法翻譯! 你請求的速度過快導致超過你的方案的RPM 請稍後在試").withStyle(ChatFormatting.YELLOW));
+                                        hasShowRequestTooFrequentError = true;
+                                    }
+                                });
+                            } else {
+                                Minecraft.getInstance().execute(() -> {
+                                    if (Minecraft.getInstance().player != null) {
+                                        Minecraft.getInstance().player.sendSystemMessage(
+                                                Component.literal("Translation failed! HTTP Status Code: " + resp.statusCode()).withStyle(ChatFormatting.RED));
+                                        Minecraft.getInstance().player.sendSystemMessage(
+                                                Component.literal("翻譯失敗! HTTP 回傳碼: " + resp.statusCode()).withStyle(ChatFormatting.RED));
+                                        hasShowOtherError = true;
+                                    }
+                                });
+                            }
+                            return;
+                        }
+                        hasShowRequestTooFrequentError = false;
+                        hasShowAPIKEYError = false;
+                        hasShowOtherError = false;
 
-                    System.out.println("status: " + resp.statusCode());
-                    translating = false;
+                        if (translatedText != null) {
+                            translatedText = translatedText
+                                    .replace("\n", " ")
+                                    .replaceAll("\\p{Cntrl}", "")
+                                    .trim();
+                            translationCache.put(textInEnglish, translatedText);
+                            System.out.println("Translated: " + textInEnglish + " -> " + translatedText);
+                        }
+
+                        System.out.println("status: " + resp.statusCode());
+                    } finally {
+                        translating = false;
+                    }
                 });
     }
 }
