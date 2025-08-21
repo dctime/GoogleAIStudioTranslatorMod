@@ -5,6 +5,9 @@ import com.google.gson.JsonObject;
 import com.mojang.realmsclient.dto.GuardedSerializer;
 import net.github.dctime.libs.Translator;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -14,6 +17,11 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 import java.io.IOException;
@@ -28,6 +36,7 @@ import java.time.Duration;
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
 @EventBusSubscriber(modid = GeminiTranslatorClient.MODID, value = Dist.CLIENT)
 public class GeminiTranslatorClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeminiTranslatorClient.class);
     public static final String MODID = "geminitranslator";
     public GeminiTranslatorClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
@@ -40,5 +49,23 @@ public class GeminiTranslatorClient {
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) throws IOException, InterruptedException {
         // Some client setup code
+    }
+
+    private static boolean loginHandled = false;
+
+    @SubscribeEvent
+    public static void onLocalPlayerJoinLevel(EntityJoinLevelEvent event) {
+        if (!loginHandled && event.getEntity() == Minecraft.getInstance().player) {
+            loginHandled = true;
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal("Google AI Studio Translator Client Loaded!").withStyle(net.minecraft.ChatFormatting.GREEN));
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal("感謝使用 Google AI Studio Translator! 自動翻譯提示匡與FTBQuest的內容的小工具!").withStyle(net.minecraft.ChatFormatting.GREEN));
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal("如果找到bug或是想要什麼請到:").withStyle(net.minecraft.ChatFormatting.GREEN));
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal("點這裡").withStyle(s -> s.withColor(net.minecraft.ChatFormatting.GREEN).withUnderlined(true).withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/dctime/GoogleAIStudioTranslatorMod/issues"))));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClientLogout(net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
+        loginHandled = false;
     }
 }

@@ -38,7 +38,7 @@ public abstract class TextFieldMixin extends Widget implements FormattedTextGett
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void onInit(CallbackInfo ci) {
-        System.out.println("TextField mixin appled!");
+//        System.out.println("TextField mixin appled!");
     }
 
     public FormattedText[] getFormattedText() {

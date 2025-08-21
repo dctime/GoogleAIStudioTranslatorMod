@@ -9,22 +9,15 @@ import net.minecraft.network.chat.Style;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @EventBusSubscriber(modid = GeminiTranslatorClient.MODID, value = Dist.CLIENT)
 public class RenderTooltipEvent {
-//    @SubscribeEvent
-//    public static void onRenderTooltip(net.neoforged.neoforge.client.event.RenderTooltipEvent.GatherComponents event) {
-//        for (Either<FormattedText, TooltipComponent> component : event.getTooltipElements()) {
-//            component.ifLeft((text)->{
-//               System.out.println(text.getString());
-//
-//            });
-//        }
-//    }
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RenderTooltipEvent.class);
     @SubscribeEvent
     public static void onRenderTooltip(net.neoforged.neoforge.client.event.RenderTooltipEvent.GatherComponents event) {
         var elements = event.getTooltipElements();
@@ -41,9 +34,9 @@ public class RenderTooltipEvent {
                     try {
                         Translator.requestTranslateToTraditionalChinese(original);
                     } catch (IOException ex) {
-                        System.out.println("IO Exception while translating: " + ex.getMessage());
+                        LOGGER.warn("IO Exception while translating: " + ex.getMessage());
                     } catch (InterruptedException ex) {
-                        System.out.println("Interrupted Exception while translating: " + ex.getMessage());
+                        LOGGER.warn("Interrupted Exception while translating: " + ex.getMessage());
                     }
                     return;
 //                    if (translated == null) return;

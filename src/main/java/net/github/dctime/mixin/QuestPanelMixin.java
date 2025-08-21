@@ -11,6 +11,6 @@ public abstract class QuestPanelMixin {
 
     @Inject(method="addWidgets", at = @At("RETURN"))
     public void useTest(CallbackInfo ci) {
-        System.out.println("Adding Widgets to QuestPanel...");
+//        System.out.println("Adding Widgets to QuestPanel...");
     }
 }

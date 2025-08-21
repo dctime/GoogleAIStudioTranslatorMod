@@ -16,6 +16,6 @@ public abstract class QuestDescriptionFieldMixin extends TextField implements Qu
 
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void onInit(CallbackInfo ci) {
-        System.out.println("QuestDescriptionField mixin applied!");
+//        System.out.println("QuestDescriptionField mixin applied!");
     }
 }

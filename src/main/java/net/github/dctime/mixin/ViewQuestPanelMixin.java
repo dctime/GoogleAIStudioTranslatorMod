@@ -4,9 +4,12 @@ import dev.ftb.mods.ftblibrary.ui.*;
 import dev.ftb.mods.ftblibrary.ui.misc.CompactGridLayout;
 import dev.ftb.mods.ftbquests.client.gui.quests.*;
 import dev.ftb.mods.ftbquests.quest.Quest;
+import net.github.dctime.GeminiTranslatorClient;
 import net.github.dctime.libs.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,6 +46,8 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
     private List<Boolean> isDescriptionTranslated = null;
     // -1 : standup, 0 : ready to resize, 1+: amount of translation left
     private int translationLeft = -1;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ViewQuestPanel.class);
 
 
     private ViewQuestPanelMixin(Panel panel, QuestScreen questScreen) {
@@ -217,7 +222,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
 
     @Inject(method = "onClosed", at = @At("HEAD"))
     public void onClosed(CallbackInfo ci) {
-        System.out.println("Warning OnClosed called, resetting translation state.");
+        LOGGER.debug("Warning OnClosed called, resetting translation state.");
         isViewQuestPanelTranslated = false;
         isDescriptionTranslated = null;
         translationLeft = -1;
@@ -225,7 +230,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
 
     @Inject(method = "setCurrentPage", at = @At("RETURN"))
     public void onSetCurrentPage(int page, CallbackInfo ci) {
-        System.out.println("setCurrentPage called with page: " + page);
+        LOGGER.debug("Warning SetCurrentPage called, resetting translation state.");
         // Reset translation state when changing pages
         isViewQuestPanelTranslated = false;
         isDescriptionTranslated = null;
@@ -234,7 +239,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
 
     private boolean translateFormattedText(FormattedTextGetterSetter formattedTextGetter) {
         if (formattedTextGetter.getFormattedText().length < 1) {
-            System.out.println("FormattedText is empty, cannot translate.");
+            LOGGER.debug("FormattedText is empty, cannot translate.");
             return false;
         }
 
@@ -246,17 +251,17 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
 
         if (Translator.translationCache.containsKey(totalText)) {
             formattedTextGetter.setTranslatedFormattedText(Translator.translationCache.get(totalText));
-            System.out.println("Using cached translation for: " + totalText + " -> " + Translator.translationCache.get(totalText));
+            LOGGER.debug("Using cached translation for: " + totalText + " -> " + Translator.translationCache.get(totalText));
 
             return true;
         } else {
-            System.out.println("Translating text: " + totalText);
+            LOGGER.debug("Translating text: " + totalText);
             try {
                 Translator.requestTranslateToTraditionalChinese(totalText);
             } catch (IOException ex) {
-                System.out.println("IO Exception while translating: " + ex.getMessage());
+                LOGGER.warn("IO Exception while translating: " + ex.getMessage());
             } catch (InterruptedException ex) {
-                System.out.println("Interrupted Exception while translating: " + ex.getMessage());
+                LOGGER.warn("Interrupted Exception while translating: " + ex.getMessage());
             }
         }
         return false;
@@ -269,7 +274,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         }
 
         if (!(titleField instanceof FormattedTextGetterSetter formattedTextGetter) || formattedTextGetter.getFormattedText().length < 1) {
-            System.out.println("Title field is not an instance of FormattedTextGetter, cannot translate.");
+            LOGGER.warn("Title field is not an instance of FormattedTextGetter, cannot translate.");
             return;
         }
 

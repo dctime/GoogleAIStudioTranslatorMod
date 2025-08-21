@@ -3,10 +3,13 @@ package net.github.dctime.libs;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.github.dctime.Config;
+import net.github.dctime.GeminiTranslatorClient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -27,7 +30,7 @@ public class Translator {
     private static boolean hasShowAPIKEYError = false;
     private static boolean hasShowRequestTooFrequentError = false;
     private static boolean hasShowOtherError = false;
-
+    private static Logger LOGGER = LoggerFactory.getLogger(Translator.class);
     // --- ftb quest ---
 
     public static final Style translatedStyle = Style.EMPTY.withColor(ChatFormatting.GRAY);
@@ -37,7 +40,7 @@ public class Translator {
         String model = "gemma-3n-e4b-it";
         String url = String.format("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent", model);
 //
-        String prompt = "請把這個翻成繁體中文 不要加前後文方便我直接取代:\n" + textInEnglish;
+        String prompt = "請把這些Minecraft方塊或物品或是Minecraft模組包的任務翻成繁體中文 不要加前後文方便我直接取代:\n" + textInEnglish;
         String jsonBody = """
                 {
                   "contents": [
@@ -70,11 +73,11 @@ public class Translator {
 public static void requestTranslateToTraditionalChinese(String textInEnglish) throws IOException, InterruptedException {
         HttpRequest req = setupRequest(textInEnglish);
         if (req == null) {
-            System.out.println("Error when setting up request for translation.");
+            LOGGER.warn("HTTP request is NULL.");
             return;
         }
         if (translating) {
-            System.out.println("Translator in use.");
+            // System.out.println("Translator in use.");
             return;
         }
         translating = true;
@@ -83,7 +86,7 @@ public static void requestTranslateToTraditionalChinese(String textInEnglish) th
                 .whenComplete((resp, throwable) -> {
                     try {
                         if (throwable != null) {
-                            System.out.println("Translation request failed: " + throwable.getMessage());
+                            LOGGER.warn("Translation request failed: " + throwable.getMessage());
                             Minecraft.getInstance().execute(() -> {
                                 if (Minecraft.getInstance().player != null && !hasShowConnectionError) {
                                     Minecraft.getInstance().player.sendSystemMessage(
@@ -109,7 +112,7 @@ public static void requestTranslateToTraditionalChinese(String textInEnglish) th
                                     .get(0).getAsJsonObject()
                                     .get("text").getAsString();
                         } catch (Exception e) {
-                            System.out.println("Error parsing response: " + responseText);
+                            LOGGER.warn("Error parsing response: " + responseText);
                             if (resp.statusCode() == 403) {
                                 Minecraft.getInstance().execute(() -> {
                                     if (Minecraft.getInstance().player != null && !hasShowAPIKEYError) {
@@ -130,7 +133,7 @@ public static void requestTranslateToTraditionalChinese(String textInEnglish) th
                                         hasShowRequestTooFrequentError = true;
                                     }
                                 });
-                            } else {
+                            } else if (!hasShowOtherError) {
                                 Minecraft.getInstance().execute(() -> {
                                     if (Minecraft.getInstance().player != null) {
                                         Minecraft.getInstance().player.sendSystemMessage(
@@ -153,10 +156,10 @@ public static void requestTranslateToTraditionalChinese(String textInEnglish) th
                                     .replaceAll("\\p{Cntrl}", "")
                                     .trim();
                             translationCache.put(textInEnglish, translatedText);
-                            System.out.println("Translated: " + textInEnglish + " -> " + translatedText);
+                            LOGGER.debug("Translated: " + textInEnglish + " -> " + translatedText);
                         }
 
-                        System.out.println("status: " + resp.statusCode());
+                        LOGGER.debug("status: " + resp.statusCode());
                     } finally {
                         translating = false;
                     }
