@@ -55,126 +55,104 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
 
     private boolean isViewQuestPanelTranslated = false;
     private List<Boolean> isDescriptionTranslated = null;
+    // -1 : standup, 0 : ready to resize, 1+: amount of translation left
+    private int translationLeft = -1;
+
 
     private ViewQuestPanelMixin(Panel panel, QuestScreen questScreen) {
         super(panel);
         this.questScreen = questScreen;
     }
 
+    private void resizeUI() {
+        // Translation successful, do some ui adjustment
+        // title width limit
 
-    @Inject(method = "draw", at = @At("HEAD"))
-    public void onDraw(GuiGraphics graphics, Theme theme, int x, int y, int w, int h, CallbackInfo ci) {
-        translateTitle();
-
-        if (isDescriptionTranslated == null) {
-            isDescriptionTranslated = new ArrayList<>(panelText.getWidgets().size());
-            for (int widgetIndex = 0; widgetIndex < panelText.getWidgets().size(); widgetIndex++) {
-                if (panelText.getWidgets().get(widgetIndex) instanceof FormattedTextGetterSetter) {
-                    isDescriptionTranslated.add(false);
-                } else {
-                    isDescriptionTranslated.add(true);
-                }
-            }
-            return;
+        int width = Math.max(200, this.titleField.width + 54);
+        if (this.quest.getMinWidth() > 0) {
+            width = Math.max(this.quest.getMinWidth(), width);
         }
-
-        for (int widgetIndex = 0; widgetIndex < isDescriptionTranslated.size(); widgetIndex++) {
-            if (isDescriptionTranslated.get(widgetIndex)) continue;
-            // not translated yet, so we need to translate it
-            Widget widget = panelText.getWidgets().get(widgetIndex);
-
-            if (!(widget instanceof FormattedTextGetterSetter formattedTextGetter)) return;
-            if (translateFormattedText(formattedTextGetter)) {
-                isDescriptionTranslated.set(widgetIndex, true);
-
-                // Translation successful, do some ui adjustment
-                // title width limit
-
-                int width = Math.max(200, this.titleField.width + 54);
-                if (this.quest.getMinWidth() > 0) {
-                    width = Math.max(this.quest.getMinWidth(), width);
-                }
 //                else if (this.questScreen.getSelectedChapter().isPresent()) {
 //                    if (this.questScreen.getSelectedChapter().get().getDefaultMinWidth() > 0) {
 //                        width = Math.max(this.questScreen.getSelectedChapter().get().getDefaultMinWidth(), width);
 //                    }
 //                }
-                this.setWidth(Math.max(width, this.getWidth()));
+        this.setWidth(Math.max(width, this.getWidth()));
 //                this.panelContent.setPosAndSize(0, Math.max(16, this.titleField.height + 8), this.getWidth(), 0);
 //                this.panelContent.setHeight(this.height - 17);
-                // TODO: Get quest screen and modify modal panel width
-                // NOTE: NO NEED CUZ modalPanel is already viewQuestPanel
+        // TODO: Get quest screen and modify modal panel width
+        // NOTE: NO NEED CUZ modalPanel is already viewQuestPanel
 //                if (this.questScreen instanceof ModalPanelsGetter modalPanelsGetter) {
 //                    ModalPanel modalPanel = modalPanelsGetter.getModalPanels().getFirst();
 //                    if (modalPanel != null) {
 //                        modalPanel.setWidth(this.getWidth());
 //                    }
 //                }
-                this.setPos((this.parent.width - this.width) / 2, (this.parent.height - this.height) / 2);
-                int w2 = this.getWidth()/2;
+        this.setPos((this.parent.width - this.width) / 2, (this.parent.height - this.height) / 2);
+        int w2 = this.getWidth()/2;
 
 //                this.panelTasks.setPosAndSize(2, 16, w2 - 3, this.panelTasks.height);
 //                this.panelRewards.setPosAndSize(w2 + 2, 16, w2 - 3, this.panelRewards.height);
 //
-                 // tasks rewards ui resize
-                int bsize = 18;
+        // tasks rewards ui resize
+        int bsize = 18;
 //                int at = this.panelTasks.align(new CompactGridLayout(bsize + 2));
 //                int ar = this.panelRewards.align(new CompactGridLayout(bsize + 2));
 //                int height = Math.max(at, ar);
 
-                this.panelTasks.setPosAndSize(2, 16, w2 - 3, this.panelTasks.height);
-                this.panelRewards.setPosAndSize(w2 + 2, 16, w2 - 3, this.panelTasks.height);
-                int at = this.panelTasks.align(new CompactGridLayout(bsize + 2));
-                int ar = this.panelRewards.align(new CompactGridLayout(bsize + 2));
-                int height = Math.max(at, ar);
-                this.panelTasks.setHeight(height);
-                this.panelRewards.setHeight(height);
-                int tox = (this.panelTasks.width - this.panelTasks.getContentWidth()) / 2;
-                int rox = (this.panelRewards.width - this.panelRewards.getContentWidth()) / 2;
-                int toy = (this.panelTasks.height - this.panelTasks.getContentHeight()) / 2;
-                int roy = (this.panelRewards.height - this.panelRewards.getContentHeight()) / 2;
+        this.panelTasks.setPosAndSize(2, 16, w2 - 3, this.panelTasks.height);
+        this.panelRewards.setPosAndSize(w2 + 2, 16, w2 - 3, this.panelTasks.height);
+        int at = this.panelTasks.align(new CompactGridLayout(bsize + 2));
+        int ar = this.panelRewards.align(new CompactGridLayout(bsize + 2));
+        int height = Math.max(at, ar);
+        this.panelTasks.setHeight(height);
+        this.panelRewards.setHeight(height);
+        int tox = (this.panelTasks.width - this.panelTasks.getContentWidth()) / 2;
+        int rox = (this.panelRewards.width - this.panelRewards.getContentWidth()) / 2;
+        int toy = (this.panelTasks.height - this.panelTasks.getContentHeight()) / 2;
+        int roy = (this.panelRewards.height - this.panelRewards.getContentHeight()) / 2;
 
-                for(Widget widgetTasks : this.panelTasks.getWidgets()) {
-                    widgetTasks.setX(widgetTasks.posX + tox);
-                    widgetTasks.setY(widgetTasks.posY + toy);
+        for(Widget widgetTasks : this.panelTasks.getWidgets()) {
+            widgetTasks.setX(widgetTasks.posX + tox);
+            widgetTasks.setY(widgetTasks.posY + toy);
+        }
+
+        for(Widget widgetRewards : this.panelRewards.getWidgets()) {
+            widgetRewards.setX(widgetRewards.posX + rox);
+            widgetRewards.setY(widgetRewards.posY + roy);
+        }
+
+        for (int widgetID = 0; widgetID < this.panelContent.getWidgets().size(); widgetID++) {
+            Widget contentWidget = this.panelContent.getWidget(widgetID);
+            if (contentWidget instanceof TextField taskOrRewardTextField) {
+                int TaskTextID = 3;
+                int RewardTextID = 4;
+                if (widgetID == TaskTextID) {
+                    // Task text field
+                    taskOrRewardTextField.setPosAndSize(2, 2, w2 - 3, 13);
+                    taskOrRewardTextField.setMaxWidth(width);
+                } else if (widgetID == RewardTextID) {
+                    // Reward text field
+                    taskOrRewardTextField.setPosAndSize(w2 + 2, 2, w2 - 3, 13);
+                    taskOrRewardTextField.setMaxWidth(width);
                 }
+            }
 
-                for(Widget widgetRewards : this.panelRewards.getWidgets()) {
-                    widgetRewards.setX(widgetRewards.posX + rox);
-                    widgetRewards.setY(widgetRewards.posY + roy);
+            if (contentWidget instanceof ColorWidget boarderWidget) {
+                if (widgetID == 5) {
+                    boarderWidget.setPosAndSize(w2, 0, 1, 16 + height + 6);
+                } else if (widgetID == 6) {
+                    boarderWidget.setPosAndSize(1, 16 + height + 6, width - 2, 1);
                 }
+            }
+        }
 
-                for (int widgetID = 0; widgetID < this.panelContent.getWidgets().size(); widgetID++) {
-                    Widget contentWidget = this.panelContent.getWidget(widgetID);
-                    if (contentWidget instanceof TextField taskOrRewardTextField) {
-                        int TaskTextID = 3;
-                        int RewardTextID = 4;
-                        if (widgetID == TaskTextID) {
-                            // Task text field
-                            taskOrRewardTextField.setPosAndSize(2, 2, w2 - 3, 13);
-                            taskOrRewardTextField.setMaxWidth(w);
-                        } else if (widgetID == RewardTextID) {
-                            // Reward text field
-                            taskOrRewardTextField.setPosAndSize(w2 + 2, 2, w2 - 3, 13);
-                            taskOrRewardTextField.setMaxWidth(w);
-                        }
-                    }
-
-                    if (contentWidget instanceof ColorWidget boarderWidget) {
-                        if (widgetID == 5) {
-                            boarderWidget.setPosAndSize(w2, 0, 1, 16 + height + 6);
-                        } else if (widgetID == 6) {
-                            boarderWidget.setPosAndSize(1, 16 + height + 6, width - 2, 1);
-                        }
-                    }
-                }
-
-                this.panelContent.setPosAndSize(0, Math.max(16, this.titleField.height + 8), width, this.panelContent.height);
+        this.panelContent.setPosAndSize(0, Math.max(16, this.titleField.height + 8), width, this.panelContent.height);
 //                this.panelText.setHeight(this.panelText.align(new WidgetLayout.Vertical(0, 1, 2)));
 //                this.setHeight(Math.min(this.panelContent.getContentHeight() + this.titleField.height + 12, this.parent.height - 10));
 
 
-                // TODO: adjust everything that got width
+        // TODO: adjust everything that got width
 //                this.panelTasks.setPosAndSize(2, 16, w2 - 3, this.panelTasks.height);
 //                this.panelRewards.setPosAndSize(w2 + 2, 16, w2 - 3, this.panelTasks.width);
 
@@ -184,34 +162,67 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
 //                this.panelText.setPosAndSize(3, 16 + height + 12, this.getWidth() - 6, 0);
 //                this.titleField.setPosAndSize(27, 4, width - 54, this.titleField.height);
 //                this.panelContent.setHeight(this.panelContent.align(new WidgetLayout.Vertical(0, 1, 2)));
-                // blankpanel
+        // blankpanel
 
-                this.panelText.setHeight(this.panelText.align(new WidgetLayout.Vertical(0, 1, 2)));
-                this.panelText.setPosAndSize(3, 16 + height + 12, width - 6, this.panelText.height);
-                for (Widget textWidget : this.panelText.getWidgets()) {
-                    if (textWidget instanceof TextField textField) {
-                        textField.setMaxWidth(width - 6);
-                        textField.setWidth(width - 6);
-                    }
-                }
+        this.panelText.setHeight(this.panelText.align(new WidgetLayout.Vertical(0, 1, 2)));
+        this.panelText.setPosAndSize(3, 16 + height + 12, width - 6, this.panelText.height);
+        for (Widget textWidget : this.panelText.getWidgets()) {
+            if (textWidget instanceof TextField textField) {
+                textField.setMaxWidth(width - 6);
+                textField.setWidth(width - 6);
+            }
+        }
 //                this.setHeight(Math.min(this.panelContent.getContentHeight() + this.titleField.height + 12, this.parent.height - 10));
 //                panelText.getWidgets().get(panelText.getWidgets().size()-1).posY =
-                int iconSize = Math.min(16, this.titleField.height + 2);
-                for (Widget viewWidget : this.getWidgets()) {
-                    if (viewWidget instanceof ICloseViewQuestButton) {
-                        viewWidget.setPosAndSize(width - iconSize - 2, 4, iconSize, iconSize);
-                    } else if (viewWidget instanceof IPinViewQuestButton) {
-                        viewWidget.setPosAndSize(width - iconSize * 2 - 4, 4, iconSize, iconSize);
-                    } else if (Objects.equals(viewWidget.getTitle(), Component.translatable("ftbquests.gui.no_dependants")) ||
-                            Objects.equals(viewWidget.getTitle(), Component.translatable("ftbquests.gui.view_dependants"))) {
-                        viewWidget.setPosAndSize(width - 13, this.panelContent.posY + 2, 13, 13);
-                    }
-                }
-
-
-
+        int iconSize = Math.min(16, this.titleField.height + 2);
+        for (Widget viewWidget : this.getWidgets()) {
+            if (viewWidget instanceof ICloseViewQuestButton) {
+                viewWidget.setPosAndSize(width - iconSize - 2, 4, iconSize, iconSize);
+            } else if (viewWidget instanceof IPinViewQuestButton) {
+                viewWidget.setPosAndSize(width - iconSize * 2 - 4, 4, iconSize, iconSize);
+            } else if (Objects.equals(viewWidget.getTitle(), Component.translatable("ftbquests.gui.no_dependants")) ||
+                    Objects.equals(viewWidget.getTitle(), Component.translatable("ftbquests.gui.view_dependants"))) {
+                viewWidget.setPosAndSize(width - 13, this.panelContent.posY + 2, 13, 13);
             }
+        }
+    }
 
+
+    @Inject(method = "draw", at = @At("HEAD"))
+    public void onDraw(GuiGraphics graphics, Theme theme, int x, int y, int w, int h, CallbackInfo ci) {
+        translateTitle();
+
+        // setup isDescriptionTranslated
+        if (isDescriptionTranslated == null) {
+            isDescriptionTranslated = new ArrayList<>(panelText.getWidgets().size());
+            translationLeft = panelText.getWidgets().size();
+            for (int widgetIndex = 0; widgetIndex < panelText.getWidgets().size(); widgetIndex++) {
+                if (panelText.getWidgets().get(widgetIndex) instanceof FormattedTextGetterSetter) {
+                    isDescriptionTranslated.add(false);
+                } else {
+                    isDescriptionTranslated.add(true);
+                    translationLeft--;
+                }
+            }
+            return;
+        }
+
+        // send requests for all texts.
+        for (int widgetIndex = 0; widgetIndex < isDescriptionTranslated.size(); widgetIndex++) {
+            if (isDescriptionTranslated.get(widgetIndex)) continue;
+            // not translated yet, so we need to translate it
+            Widget widget = panelText.getWidgets().get(widgetIndex);
+
+            if (!(widget instanceof FormattedTextGetterSetter formattedTextGetter)) return;
+            if (translateFormattedText(formattedTextGetter)) {
+                isDescriptionTranslated.set(widgetIndex, true);
+                translationLeft--;
+            }
+        }
+
+        if (translationLeft == 0) {
+            translationLeft = -1;
+            resizeUI();
         }
     }
 
@@ -220,6 +231,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         System.out.println("Warning OnClosed called, resetting translation state.");
         isViewQuestPanelTranslated = false;
         isDescriptionTranslated = null;
+        translationLeft = -1;
     }
 
     @Inject(method = "setCurrentPage", at = @At("RETURN"))
@@ -228,6 +240,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         // Reset translation state when changing pages
         isViewQuestPanelTranslated = false;
         isDescriptionTranslated = null;
+        translationLeft = -1;
     }
 
     private boolean translateFormattedText(FormattedTextGetterSetter formattedTextGetter) {
