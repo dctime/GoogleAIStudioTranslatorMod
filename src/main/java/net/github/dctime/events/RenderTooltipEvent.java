@@ -2,11 +2,9 @@ package net.github.dctime.events;
 
 import com.mojang.datafixers.util.Either;
 import net.github.dctime.Config;
-import net.github.dctime.GeminiTranslatorClient;
+import net.github.dctime.GoogleAIStudioTranslatorClient;
 import net.github.dctime.libs.Translator;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -15,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-@EventBusSubscriber(modid = GeminiTranslatorClient.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = GoogleAIStudioTranslatorClient.MODID, value = Dist.CLIENT)
 public class RenderTooltipEvent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RenderTooltipEvent.class);

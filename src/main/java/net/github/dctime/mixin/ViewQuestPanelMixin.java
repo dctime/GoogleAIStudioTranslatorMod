@@ -5,7 +5,6 @@ import dev.ftb.mods.ftblibrary.ui.misc.CompactGridLayout;
 import dev.ftb.mods.ftbquests.client.gui.quests.*;
 import dev.ftb.mods.ftbquests.quest.Quest;
 import net.github.dctime.Config;
-import net.github.dctime.GeminiTranslatorClient;
 import net.github.dctime.libs.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -16,6 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -179,6 +179,13 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         }
     }
 
+    @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true)
+    public void mouseScrolled(double scroll, CallbackInfoReturnable<Boolean> cir) {
+        if (translationLeft > 0) {
+            System.out.println("Not translated yet, cannot scroll.");
+            cir.cancel();
+        }
+    }
 
     @Inject(method = "draw", at = @At("HEAD"))
     public void onDraw(GuiGraphics graphics, Theme theme, int x, int y, int w, int h, CallbackInfo ci) {

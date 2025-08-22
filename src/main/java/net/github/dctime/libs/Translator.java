@@ -3,7 +3,6 @@ package net.github.dctime.libs;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.github.dctime.Config;
-import net.github.dctime.GeminiTranslatorClient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
