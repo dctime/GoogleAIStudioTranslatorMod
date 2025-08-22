@@ -182,7 +182,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
     @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true)
     public void mouseScrolled(double scroll, CallbackInfoReturnable<Boolean> cir) {
         if (translationLeft > 0) {
-            System.out.println("Not translated yet, cannot scroll.");
+//            System.out.println("Not translated yet. Tasks left: " + translationLeft + ", cannot scroll.");
             cir.cancel();
         }
     }
@@ -197,9 +197,10 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
             isDescriptionTranslated = new ArrayList<>(panelText.getWidgets().size());
             translationLeft = 0;
             for (int widgetIndex = 0; widgetIndex < panelText.getWidgets().size(); widgetIndex++) {
-                if (panelText.getWidgets().get(widgetIndex) instanceof FormattedTextGetterSetter) {
+                if (panelText.getWidgets().get(widgetIndex) instanceof FormattedTextGetterSetter formattedTextGetterSetter) {
                     isDescriptionTranslated.add(false);
                     translationLeft++;
+                    LOGGER.debug("Add Translation Task, total: " + translationLeft + "Text: " + (formattedTextGetterSetter.getFormattedText().length > 0 ? formattedTextGetterSetter.getFormattedText()[0].getString() + "length: " + formattedTextGetterSetter.getFormattedText().length : "empty"));
                 } else {
                     isDescriptionTranslated.add(true);
                 }
@@ -219,6 +220,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
                 resizeUI();
                 this.updateMouseOver(this.getMouseX(), this.getMouseY());
                 translationLeft--;
+                LOGGER.debug("Translation Task Done, left: " + translationLeft);
             }
         }
 
@@ -249,7 +251,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
     private boolean translateFormattedText(FormattedTextGetterSetter formattedTextGetter) {
         if (formattedTextGetter.getFormattedText().length < 1) {
             LOGGER.debug("FormattedText is empty, cannot translate.");
-            return false;
+            return true;
         }
 
         String totalText = "";
@@ -290,6 +292,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         if (translateFormattedText(formattedTextGetter)) {
             // Translation successful, set the translated flag
             isViewQuestPanelTranslated = true;
+            resizeUI();
         }
     }
 }
