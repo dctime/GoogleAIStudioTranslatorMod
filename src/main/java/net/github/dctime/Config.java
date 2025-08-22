@@ -38,24 +38,22 @@ public class Config {
                     "只回繁體中文的翻譯，不要多字、不要解釋。\n" +
                             "語氣貼近Minecraft與常見模組敘述（短句、指令/提示感）。\n" +
                             "遵守：\n" +
-                            "1) 保留原字串所有佔位符與格式：{player}、{item}、%s、%d、{0}、\\n、\\t、\\r、\\uXXXX、JSON、NBT、<...>、[...]、(...)\n" +
-                            "2) 不翻譯：模組/方塊/物品 ID、路徑、Key、Tag、檔名、指令(/give 等)、進度代碼、顏色/格式碼(§ 或 &)。\n" +
-                            "3) 優先使用《Minecraft》繁中(zh_tw)官方譯名；無官方譯名則用台灣社群慣用語。\n" +
-                            "4) 名詞遵循遊戲慣用：block=方塊、slab=半磚、stairs=樓梯、planks=木材、log=原木、ore=礦石、ingot=錠、nugget=金粒、dye=染料、bucket=桶、stack=堆疊、craft=合成、smelt=熔煉、furnace=熔爐、blast furnace=高爐、smoker=煙燻爐、enchant=附魔、anvil=鐵砧、loot=戰利品、biome=生態域。\n" +
-                            "5) 字面直譯、保持簡潔；不要加背景、不要腦補。\n" +
-                            "6) 標點與大小寫盡量貼近原風格(專有名詞維持大小寫)。\n" +
-                            "待翻譯：\n" +
-                            "{TEXT}"
+                            "1) 不翻譯：模組/方塊/物品 ID、路徑、Key、Tag、檔名、指令(/give 等)、進度代碼、顏色/格式碼(§ 或 &)。\n" +
+                            "2) 優先使用《Minecraft》繁中(zh_tw)官方譯名；無官方譯名則用台灣社群慣用語。\n" +
+                            "3) 名詞遵循遊戲慣用：block=方塊、slab=半磚、stairs=樓梯、planks=木材、log=原木、ore=礦石、ingot=錠、nugget=金粒、dye=染料、bucket=桶、stack=堆疊、craft=合成、smelt=熔煉、furnace=熔爐、blast furnace=高爐、smoker=煙燻爐、enchant=附魔、anvil=鐵砧、loot=戰利品、biome=生態域。\n" +
+                            "4) 字面直譯、保持簡潔；不要加背景、不要腦補。\n" +
+                            "5) 標點與大小寫盡量貼近原風格(專有名詞維持大小寫)。\n" +
+                            "待翻譯：\n"
             );
-
-    // (Optional) 更嚴格版本：要求只輸出純文字一行，避免代碼框/前後空白
-    public static final ModConfigSpec.ConfigValue<String> PROMPT_STRICT = BUILDER
-            .comment("Strict prompt: force plain text output without code fences or extra whitespace.")
-            .define("Prompt Strict",
-                    "只回繁體中文翻譯本體(純文字，不要代碼區塊、不要前後空白、不要額外說明)。\n" +
-                            "規則相同：保留所有佔位符與格式；不翻譯 ID/路徑/Key/Tag/指令；遵循 zh_tw 官方譯名與台灣社群慣用語；直譯、簡潔。\n" +
-                            "待翻譯：{TEXT}"
-            );
+//
+//    // (Optional) 更嚴格版本：要求只輸出純文字一行，避免代碼框/前後空白
+//    public static final ModConfigSpec.ConfigValue<String> PROMPT_STRICT = BUILDER
+//            .comment("Strict prompt: force plain text output without code fences or extra whitespace.")
+//            .define("Prompt Strict",
+//                    "只回繁體中文翻譯本體(純文字，不要代碼區塊、不要前後空白、不要額外說明)。\n" +
+//                            "規則相同：保留所有佔位符與格式；不翻譯 ID/路徑/Key/Tag/指令；遵循 zh_tw 官方譯名與台灣社群慣用語；直譯、簡潔。\n" +
+//                            "待翻譯：{TEXT}"
+//            );
 
     // === Feature toggles ===
     public static final ModConfigSpec.BooleanValue ENABLE_TOOLTIP_TRANSLATION = BUILDER
