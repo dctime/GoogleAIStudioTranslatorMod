@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.world.entity.player.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,16 @@ public class Translator {
     // --- ftb quest ---
 
     public static final Style translatedStyle = Style.EMPTY.withColor(ChatFormatting.GRAY);
+
+    public static void clearCache() {
+        // Execute logic to perform on click here
+        if (Translator.translationCache.isEmpty()) return;
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+        Translator.translationCache.clear();
+        player.sendSystemMessage(Component.literal("Translation cache cleared.").withStyle(ChatFormatting.YELLOW));
+        player.sendSystemMessage(Component.literal("清除翻譯快取").withStyle(ChatFormatting.YELLOW));
+    }
 
     @Nullable
     private static HttpRequest setupRequest(String textInEnglish) {

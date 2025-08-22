@@ -162,14 +162,13 @@ dependencies {
 
 
     //https://www.curseforge.com/minecraft/mc-mods/ftb-teams-forge
-    implementation "curse.maven:ftb-teams-forge-404468:6119437"
+    implementation("curse.maven:ftb-teams-forge-404468:6119437")
     //https://www.curseforge.com/minecraft/mc-mods/architectury-api
-    implementation "curse.maven:architectury-api-419699:5786327"
+    implementation("curse.maven:architectury-api-419699:5786327")
     //https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge
-    implementation "curse.maven:ftb-library-forge-404465:6874538"
+    implementation("curse.maven:ftb-library-forge-404465:6874538")
     //https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge
-    implementation "curse.maven:ftb-quests-forge-289412:6721642"
-
+    implementation("curse.maven:ftb-quests-forge-289412:6721642")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

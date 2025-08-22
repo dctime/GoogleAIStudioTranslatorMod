@@ -1,5 +1,6 @@
 package net.github.dctime;
 
+import net.github.dctime.datagen.LanguageProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;

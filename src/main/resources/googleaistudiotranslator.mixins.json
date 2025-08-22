@@ -1,4 +1,5 @@
 {
+  "plugin": "net.github.dctime.compability.ftbquests.LoadMixinPlugin",
   "required": true,
   "package": "net.github.dctime.mixin",
   "compatibilityLevel": "JAVA_21",
