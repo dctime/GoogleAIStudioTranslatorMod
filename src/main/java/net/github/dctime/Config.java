@@ -26,19 +26,23 @@ public class Config {
 //            .defineInRange("magicNumber", 42, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.ConfigValue<String> API_KEY = BUILDER
-            .comment("The API KEY from Google AI Studio [Google AI Studio 的 API KEY]")
+            .comment("The API KEY from Google AI Studio [Google AI Studio 的 API KEY] (可以在 https://ai.google.dev/ 申請一個免費的API KEY)")
             .define("Google AI Studio API KEY", "");
 
     public static final ModConfigSpec.ConfigValue<String> MODEL_NAME = BUILDER
             .comment("The model name to use for translation [使用的Google AI Studio模型] (免費仔可以用Gemmma像是 gemma-3-27b-it)")
             .define("Google AI Studio Model Name", "gemma-3-27b-it");
 
+    public static final ModConfigSpec.ConfigValue<String> PROMPT = BUILDER
+            .comment("The prompt to use for translation [翻譯時使用的提示語] (預設為 '請把這個翻成繁體中文 不要加前後文方便我直接取代:')")
+            .define("Prompt", "請把這個翻成繁體中文 不要加前後文方便我直接取代:");
+
     public static final ModConfigSpec.BooleanValue ENABLE_TOOLTIP_TRANSLATION = BUILDER
-        .comment("Whether to enable tooltip translation [滑鼠滑在物品上等是否啟用翻譯]")
+        .comment("Whether to enable tooltip translation [滑鼠滑在物品上等是否啟用翻譯] (預設為 true)")
         .define("Enable Tooltip Translation", true);
 
     public static final ModConfigSpec.BooleanValue ENABLE_FTB_QUEST_TRANSLATION = BUILDER
-            .comment("Whether to enable FTB Quests translation [是否啟用 FTB Quests 翻譯]")
+            .comment("Whether to enable FTB Quests translation [是否啟用 FTB Quests 翻譯] (預設為 true)")
             .define("Enable FTB Quests Translation", true);
 
     // a list of strings that are treated as resource locations for items

@@ -40,8 +40,7 @@ public class Translator {
         String model = Config.MODEL_NAME.get();
         String url = String.format("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent", model);
 //
-        String prompt = "你是一個英翻中的工具 請翻成繁體中文 Minecraft相關" +
-                " 不要加前後文方便我直接取代:" + textInEnglish;
+        String prompt = Config.PROMPT.get() + "\n" + textInEnglish;
         String jsonBody = """
                 {
                   "contents": [
