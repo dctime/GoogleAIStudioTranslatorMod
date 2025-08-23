@@ -1,0 +1,34 @@
+package net.github.dctime.events;
+
+import net.github.dctime.GoogleAIStudioTranslatorClient;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+
+@EventBusSubscriber(modid = GoogleAIStudioTranslatorClient.MODID, value = Dist.CLIENT)
+public class PlayerJoinWorldEvent {
+    private static boolean loginHandled = false;
+
+    @SubscribeEvent
+    public static void onLocalPlayerJoinLevel(EntityJoinLevelEvent event) {
+        if (!loginHandled && event.getEntity() == Minecraft.getInstance().player) {
+            loginHandled = true;
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal("Google AI Studio Translator Loaded!").withStyle(net.minecraft.ChatFormatting.GREEN));
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal("感謝使用 Google AI Studio Translator! 自動翻譯提示匡與FTBQuest的內容的小工具!").withStyle(net.minecraft.ChatFormatting.GREEN));
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal("使用前請先去 Esc -> Mods -> Google Ai Studio Translator 修改 config").withStyle(net.minecraft.ChatFormatting.GREEN));
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal("設定完後只要把滑鼠游標放在物品上或是進入FTBQuest頁面就會自動翻譯").withStyle(net.minecraft.ChatFormatting.GREEN));
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal("按F4可以清除翻譯快取 可去按鍵設定修改").withStyle(net.minecraft.ChatFormatting.GREEN));
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal("如果找到bug或是想要什麼請").withStyle(net.minecraft.ChatFormatting.GREEN));
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal("點這裡").withStyle(s -> s.withColor(net.minecraft.ChatFormatting.GREEN).withUnderlined(true).withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/dctime/GoogleAIStudioTranslatorMod/issues"))));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClientLogout(net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
+        loginHandled = false;
+    }
+}

@@ -19,6 +19,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class Translator {
     public static HashMap<String, String> translationCache = new HashMap<>();
@@ -81,12 +82,27 @@ public class Translator {
         return req;
     }
 
+    public static boolean containsChinese(String str) {
+        if (str == null) {
+            return false;
+        }
+        // 检查是否包含至少一个中文字符
+        return Pattern.compile("[\u4e00-\u9fa5]").matcher(str).find();
+    }
+
 public static void requestTranslateToTraditionalChinese(String textInEnglish) throws IOException, InterruptedException {
         HttpRequest req = setupRequest(textInEnglish);
         if (req == null) {
             LOGGER.warn("HTTP request is NULL.");
             return;
         }
+
+        if (containsChinese(textInEnglish)) {
+            translationCache.put(textInEnglish, "");
+            LOGGER.debug("Text contains Chinese, skipping translation: " + textInEnglish);
+            return;
+        }
+
         if (translating) {
             // System.out.println("Translator in use.");
             return;
