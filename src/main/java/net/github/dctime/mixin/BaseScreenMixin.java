@@ -3,7 +3,7 @@ package net.github.dctime.mixin;
 import dev.ftb.mods.ftblibrary.ui.BaseScreen;
 import dev.ftb.mods.ftblibrary.ui.ModalPanel;
 import dev.ftb.mods.ftblibrary.ui.Panel;
-import net.github.dctime.libs.ModalPanelsGetter;
+import net.github.dctime.libs.ftbquests.ModalPanelsGetter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

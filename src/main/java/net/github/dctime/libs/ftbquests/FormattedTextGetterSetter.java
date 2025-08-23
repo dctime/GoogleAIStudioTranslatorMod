@@ -1,4 +1,4 @@
-package net.github.dctime.libs;
+package net.github.dctime.libs.ftbquests;
 
 import net.minecraft.network.chat.FormattedText;
 

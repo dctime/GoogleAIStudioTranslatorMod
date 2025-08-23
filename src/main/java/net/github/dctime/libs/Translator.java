@@ -82,7 +82,7 @@ public class Translator {
         return req;
     }
 
-    public static boolean containsChinese(String str) {
+    private static boolean containsChinese(String str) {
         if (str == null) {
             return false;
         }

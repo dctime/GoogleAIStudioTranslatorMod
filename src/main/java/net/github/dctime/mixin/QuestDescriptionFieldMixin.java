@@ -2,7 +2,7 @@ package net.github.dctime.mixin;
 
 import dev.ftb.mods.ftblibrary.ui.Panel;
 import dev.ftb.mods.ftblibrary.ui.TextField;
-import net.github.dctime.libs.QuestDescriptionFieldGetterSetter;
+import net.github.dctime.libs.ftbquests.QuestDescriptionFieldGetterSetter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

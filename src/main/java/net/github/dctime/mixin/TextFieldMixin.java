@@ -4,7 +4,7 @@ import dev.ftb.mods.ftblibrary.ui.Panel;
 import dev.ftb.mods.ftblibrary.ui.TextField;
 import dev.ftb.mods.ftblibrary.ui.Theme;
 import dev.ftb.mods.ftblibrary.ui.Widget;
-import net.github.dctime.libs.FormattedTextGetterSetter;
+import net.github.dctime.libs.ftbquests.FormattedTextGetterSetter;
 import net.github.dctime.libs.Translator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
