@@ -64,6 +64,10 @@ public class Config {
             .comment("Whether to enable FTB Quests translation [是否啟用 FTB Quests 翻譯] (預設 true)")
             .define("Enable FTB Quests Translation", true);
 
+    public static final ModConfigSpec.BooleanValue ENABLE_JADE_CONFIG = BUILDER
+            .comment("Whether to enable Jade translation [是否啟用 Jade 翻譯] (預設 true)")
+            .define("Enable Jade Translation", true);
+
     // // Example of item list config (kept as reference):
     // public static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
     //         .comment("A list of items to log on common setup.")

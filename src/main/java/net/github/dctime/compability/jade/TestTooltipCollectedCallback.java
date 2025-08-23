@@ -1,5 +1,6 @@
 package net.github.dctime.compability.jade;
 
+import net.github.dctime.Config;
 import net.github.dctime.libs.Translator;
 import net.minecraft.network.chat.Component;
 import snownee.jade.api.Accessor;
@@ -15,6 +16,7 @@ public class TestTooltipCollectedCallback implements JadeTooltipCollectedCallbac
 
     @Override
     public void onTooltipCollected(IBoxElement iBoxElement, Accessor<?> accessor) {
+        if (!Config.ENABLE_JADE_CONFIG.get()) return;
         for (int jadeIndex = 0; jadeIndex < iBoxElement.getTooltip().size(); jadeIndex++) {
             String lineMsg = "";
             List<IElement> elements = iBoxElement.getTooltip().get(jadeIndex, IElement.Align.LEFT);
