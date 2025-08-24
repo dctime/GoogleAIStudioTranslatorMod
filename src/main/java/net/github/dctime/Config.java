@@ -20,21 +20,24 @@ public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     // === Basic keys for Google AI Studio ===
+    public static final String API_KEY_PATH = "api_key";
     public static final ModConfigSpec.ConfigValue<String> API_KEY = BUILDER
             .comment("The API KEY from Google AI Studio [Google AI Studio 的 API KEY]\n" +
                     "(Apply one for free at https://ai.google.dev/)")
-            .define("Google AI Studio API KEY", "");
+            .define(API_KEY_PATH, "");
 
+    public static final String MODEL_NAME_PATH = "model_name";
     public static final ModConfigSpec.ConfigValue<String> MODEL_NAME = BUILDER
             .comment("The model name to use for translation [使用的 Google AI Studio 模型]\n" +
                     "(免費可用 Gemma，如：gemma-3-27b-it)")
-            .define("Google AI Studio Model Name", "gemma-3-27b-it");
+            .define(MODEL_NAME_PATH, "gemma-3-27b-it");
 
     // === Prompt tailored for Minecraft/mod tone (ASCII-safe, no fancy quotes) ===
+    public static final String PROMPT_PATH = "prompt";
     public static final ModConfigSpec.ConfigValue<String> PROMPT = BUILDER
             .comment("The prompt to use for translation [翻譯時使用的提示語]\n" +
                     "貼近 Minecraft/模組語氣。保留佔位符與格式。不腦補。僅輸出翻譯文字。")
-            .define("Prompt",
+            .define(PROMPT_PATH,
                     "只回繁體中文的翻譯，不要多字、不要解釋。\n" +
                             "語氣貼近Minecraft與常見模組敘述（短句、指令/提示感）。\n" +
                             "遵守：\n" +
@@ -56,17 +59,21 @@ public class Config {
 //            );
 
     // === Feature toggles ===
+    public static final String ENABLE_TOOLTIP_TRANSLATION_PATH = "enable_tooltip_translation";
     public static final ModConfigSpec.BooleanValue ENABLE_TOOLTIP_TRANSLATION = BUILDER
             .comment("Whether to enable tooltip translation [滑鼠指向物品時是否啟用翻譯] (預設 true)")
-            .define("Enable Tooltip Translation", true);
+            .define(ENABLE_TOOLTIP_TRANSLATION_PATH, true);
 
+
+    public static final String ENABLE_FTB_QUEST_TRANSLATION_PATH = "enable_ftbquests_translation";
     public static final ModConfigSpec.BooleanValue ENABLE_FTB_QUEST_TRANSLATION = BUILDER
             .comment("Whether to enable FTB Quests translation [是否啟用 FTB Quests 翻譯] (預設 true)")
-            .define("Enable FTB Quests Translation", true);
+            .define(ENABLE_FTB_QUEST_TRANSLATION_PATH, true);
 
+    public static final String ENABLE_JADE_CONFIG_PATH = "enable_jade_translation";
     public static final ModConfigSpec.BooleanValue ENABLE_JADE_CONFIG = BUILDER
             .comment("Whether to enable Jade translation [是否啟用 Jade 翻譯] (預設 true)")
-            .define("Enable Jade Translation", true);
+            .define(ENABLE_JADE_CONFIG_PATH, true);
 
     // // Example of item list config (kept as reference):
     // public static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
