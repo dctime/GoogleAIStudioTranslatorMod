@@ -75,6 +75,11 @@ public class Config {
             .comment("Whether to enable Jade translation [是否啟用 Jade 翻譯] (預設 true)")
             .define(ENABLE_JADE_CONFIG_PATH, true);
 
+    public static final String ENABLE_ADVANCEMENTS_CONFIG_PATH = "enable_advancements_translation";
+    public static final ModConfigSpec.BooleanValue ENABLE_ADVANCEMENTS_CONFIG = BUILDER
+            .comment("Whether to enable Advancements translation [是否啟用成就翻譯] (預設 true)")
+            .define(ENABLE_ADVANCEMENTS_CONFIG_PATH, true);
+
     // // Example of item list config (kept as reference):
     // public static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
     //         .comment("A list of items to log on common setup.")

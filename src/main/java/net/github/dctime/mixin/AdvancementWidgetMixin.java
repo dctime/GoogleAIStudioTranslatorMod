@@ -1,6 +1,7 @@
 package net.github.dctime.mixin;
 
 import com.google.common.collect.ImmutableList;
+import net.github.dctime.Config;
 import net.github.dctime.libs.Translator;
 import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.client.Minecraft;
@@ -18,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -43,7 +43,6 @@ public abstract class AdvancementWidgetMixin {
     @Final
     private DisplayInfo display;
 
-    private FormattedCharSequence tempTitle;
     private int tempWidth;
 
     @Shadow
@@ -55,6 +54,9 @@ public abstract class AdvancementWidgetMixin {
 
     @Inject(method = "drawHover", at = @At(value = "HEAD"))
     public void onDrawHover(GuiGraphics guiGraphics, int x, int y, float fade, int width, int height, CallbackInfo ci) {
+        tempWidth = this.width;
+
+        if (!Config.ENABLE_ADVANCEMENTS_CONFIG.get()) return;
 
         try {
             translateTitle();
@@ -85,13 +87,12 @@ public abstract class AdvancementWidgetMixin {
             j = Math.max(j, Minecraft.getInstance().font.width(formattedcharsequence));
         }
 
-        tempWidth = this.width;
         this.width = j + 3 + 5;
     }
 
     @Inject(method="drawHover", at = @At(value = "RETURN"))
     public void endDrawHover(GuiGraphics guiGraphics, int x, int y, float fade, int width, int height, CallbackInfo ci) {
-        title = tempTitle;
+        this.title = Language.getInstance().getVisualOrder(Minecraft.getInstance().font.substrByWidth(display.getTitle(), 163));
         int i = getMaxProgressWidth();
         int j = 29 + Minecraft.getInstance().font.width(this.title) + i;
         this.description = Language.getInstance().getVisualOrder(this.findOptimalLines(ComponentUtils.mergeStyles(display.getDescription().copy(), Style.EMPTY.withColor(display.getType().getChatColor())), j));
@@ -100,7 +101,7 @@ public abstract class AdvancementWidgetMixin {
 
     private void translateTitle() throws IOException, InterruptedException {
         // replace orignal title
-        tempTitle = title;
+
         AtomicReference<String> titleOriginalText = new AtomicReference<>("");
         title.accept((var1, var2, var3) -> {
 //            System.out.println("var1: " + var1 + ", var2: " + var2 + ", var3: " + var3);

@@ -161,15 +161,23 @@ dependencies {
     // at runtime, use the full JEI jar for NeoForge
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
+    //https://www.curseforge.com/minecraft/mc-mods/ftb-teams-forge
+    compileOnly("curse.maven:ftb-teams-forge-404468:6119437")
+    //https://www.curseforge.com/minecraft/mc-mods/architectury-api
+    compileOnly("curse.maven:architectury-api-419699:5786327")
+    //https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge
+    compileOnly("curse.maven:ftb-library-forge-404465:6874538")
+    //https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge
+    compileOnly("curse.maven:ftb-quests-forge-289412:6721642")
 
     //https://www.curseforge.com/minecraft/mc-mods/ftb-teams-forge
-    implementation("curse.maven:ftb-teams-forge-404468:6119437")
+    runtimeOnly("curse.maven:ftb-teams-forge-404468:6119437")
     //https://www.curseforge.com/minecraft/mc-mods/architectury-api
-    implementation("curse.maven:architectury-api-419699:5786327")
+    runtimeOnly("curse.maven:architectury-api-419699:5786327")
     //https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge
-    implementation("curse.maven:ftb-library-forge-404465:6874538")
+    runtimeOnly("curse.maven:ftb-library-forge-404465:6874538")
     //https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge
-    implementation("curse.maven:ftb-quests-forge-289412:6721642")
+    runtimeOnly("curse.maven:ftb-quests-forge-289412:6721642")
 
     implementation "maven.modrinth:jade:${jade_version}"
 }
