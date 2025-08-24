@@ -1,4 +1,4 @@
-package net.github.dctime.mixin;
+package net.github.dctime.mixin.ftbquests;
 
 import dev.ftb.mods.ftbquests.client.gui.quests.QuestPanel;
 import org.spongepowered.asm.mixin.Mixin;

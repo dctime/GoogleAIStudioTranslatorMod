@@ -1,7 +1,5 @@
-package net.github.dctime.compability.ftbquests;
+package net.github.dctime.compability;
 
-import net.minecraft.client.Minecraft;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.LoadingModList;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
@@ -38,6 +36,7 @@ public class LoadMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.endsWith("PinViewQuestButtonMixin")) return otherLoaded;
         if (mixinClassName.endsWith("CloseViewQuestButtonMixin")) return otherLoaded;
         if (mixinClassName.endsWith("BaseScreenMixin")) return otherLoaded;
+        if (mixinClassName.endsWith("AdvancementWidgetMixin")) return true;
         return false;
     }
 

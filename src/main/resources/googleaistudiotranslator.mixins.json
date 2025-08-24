@@ -1,5 +1,5 @@
 {
-  "plugin": "net.github.dctime.compability.ftbquests.LoadMixinPlugin",
+  "plugin": "net.github.dctime.compability.LoadMixinPlugin",
   "required": true,
   "package": "net.github.dctime.mixin",
   "compatibilityLevel": "JAVA_21",
@@ -7,13 +7,14 @@
 
   ],
   "client": [
-    "ViewQuestPanelMixin",
-    "TextFieldMixin",
-    "QuestPanelMixin",
-    "QuestDescriptionFieldMixin",
-    "BaseScreenMixin",
-    "CloseViewQuestButtonMixin",
-    "PinViewQuestButtonMixin"
+    "ftbquests.ViewQuestPanelMixin",
+    "ftbquests.TextFieldMixin",
+    "ftbquests.QuestPanelMixin",
+    "ftbquests.QuestDescriptionFieldMixin",
+    "ftbquests.BaseScreenMixin",
+    "ftbquests.CloseViewQuestButtonMixin",
+    "ftbquests.PinViewQuestButtonMixin",
+    "AdvancementWidgetMixin"
   ],
   "injectors": {
     "defaultRequire": 1

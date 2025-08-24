@@ -1,4 +1,4 @@
-package net.github.dctime.mixin;
+package net.github.dctime.mixin.ftbquests;
 
 import dev.ftb.mods.ftblibrary.ui.*;
 import dev.ftb.mods.ftblibrary.ui.misc.CompactGridLayout;

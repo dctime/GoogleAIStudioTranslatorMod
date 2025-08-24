@@ -1,4 +1,4 @@
-package net.github.dctime.mixin;
+package net.github.dctime.mixin.ftbquests;
 
 import net.github.dctime.libs.ftbquests.ICloseViewQuestButton;
 import org.spongepowered.asm.mixin.Mixin;

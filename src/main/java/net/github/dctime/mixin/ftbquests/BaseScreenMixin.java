@@ -1,4 +1,4 @@
-package net.github.dctime.mixin;
+package net.github.dctime.mixin.ftbquests;
 
 import dev.ftb.mods.ftblibrary.ui.BaseScreen;
 import dev.ftb.mods.ftblibrary.ui.ModalPanel;
