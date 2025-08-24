@@ -1,10 +1,13 @@
 package net.github.dctime.mixin;
 
 import com.google.common.collect.ImmutableList;
+import net.github.dctime.libs.Translator;
+import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.advancements.AdvancementWidget;
-import net.minecraft.network.chat.Style;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.*;
 import net.minecraft.util.FormattedCharSequence;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,54 +34,113 @@ public abstract class AdvancementWidgetMixin {
     @Mutable
     private List<FormattedCharSequence> description;
 
+    @Shadow
+    @Final
+    @Mutable
+    private int width;
+
+    @Shadow
+    @Final
+    private DisplayInfo display;
+
     private FormattedCharSequence tempTitle;
-    private List<FormattedCharSequence> tempDesc = new ArrayList<>();
+    private int tempWidth;
 
     @Shadow
     protected abstract int getMaxProgressWidth();
 
+    @Shadow
+    protected abstract List<FormattedText> findOptimalLines(Component component, int maxWidth);
+
 
     @Inject(method = "drawHover", at = @At(value = "HEAD"))
     public void onDrawHover(GuiGraphics guiGraphics, int x, int y, float fade, int width, int height, CallbackInfo ci) {
-        // replace orignal title
-        AtomicReference<String> text = new AtomicReference<>("");
-        title.accept((var1, var2, var3) -> {
-//            System.out.println("var1: " + var1 + ", var2: " + var2 + ", var3: " + var3);
-            text.set(text.get() + (char) var3);
-            return true;
-        });
-        System.out.println("Title Text: " + text.get());
 
-        FormattedCharSequence seq = FormattedCharSequence.forward(" HMMMMM", Style.EMPTY);
-        tempTitle = title;
-        title = FormattedCharSequence.composite(title, seq);
+        try {
+            translateTitle();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        // some var define
+
+        int i = getMaxProgressWidth();
+        int j = 29 + Minecraft.getInstance().font.width(this.title) + i;
 
         // replace orignal description
-        List<FormattedCharSequence> replaceDesc = new ArrayList<>();
-        for (int descIndex = 0; descIndex < description.size(); descIndex++) {
-            FormattedCharSequence descSeq = description.get(descIndex);
-            AtomicReference<String> descText = new AtomicReference<>("");
-            descSeq.accept((var1, var2, var3) -> {
-                descText.set(descText.get() + (char) var3);
-                return true;
-            });
-//            System.out.println("Desc Text: " + descText.get());
-            FormattedCharSequence newDescSeq = FormattedCharSequence.forward(" HMMMMM", Style.EMPTY);
-            tempDesc.add(description.get(descIndex));
-            replaceDesc.add(descIndex, FormattedCharSequence.composite(descSeq, newDescSeq));
+
+        try {
+            translateDesc(j);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-        description = replaceDesc;
+
         // replace width
-//        int i = getMaxProgressWidth();
-//        int j = 29 + Minecraft.getInstance().font.width(this.title) + i;
+
+        for(FormattedCharSequence formattedcharsequence : this.description) {
+            j = Math.max(j, Minecraft.getInstance().font.width(formattedcharsequence));
+        }
+
+        tempWidth = this.width;
+        this.width = j + 3 + 5;
     }
 
     @Inject(method="drawHover", at = @At(value = "RETURN"))
     public void endDrawHover(GuiGraphics guiGraphics, int x, int y, float fade, int width, int height, CallbackInfo ci) {
         title = tempTitle;
-        for (int descIndex = 0; descIndex < tempDesc.size(); descIndex++) {
-            description.set(descIndex, tempDesc.get(descIndex));
+        int i = getMaxProgressWidth();
+        int j = 29 + Minecraft.getInstance().font.width(this.title) + i;
+        this.description = Language.getInstance().getVisualOrder(this.findOptimalLines(ComponentUtils.mergeStyles(display.getDescription().copy(), Style.EMPTY.withColor(display.getType().getChatColor())), j));
+        this.width = tempWidth;
+    }
+
+    private void translateTitle() throws IOException, InterruptedException {
+        // replace orignal title
+        tempTitle = title;
+        AtomicReference<String> titleOriginalText = new AtomicReference<>("");
+        title.accept((var1, var2, var3) -> {
+//            System.out.println("var1: " + var1 + ", var2: " + var2 + ", var3: " + var3);
+            if (var3 == '"') titleOriginalText.set(titleOriginalText.get() + '\\');
+            titleOriginalText.set(titleOriginalText.get() + (char) var3);
+            return true;
+        });
+
+//        System.out.println("Title: " + titleOriginalText.get());
+
+        if (!Translator.translationCache.containsKey(titleOriginalText.get())) {
+            Translator.requestTranslateToTraditionalChinese(titleOriginalText.get());
+            return;
         }
-        tempDesc.clear();
+
+        String translated = Translator.translationCache.get(titleOriginalText.get());
+//        FormattedCharSequence seq = FormattedCharSequence.forward(" "+translated, Translator.translatedStyle);
+//        title = FormattedCharSequence.composite(title, seq);
+        this.title = Language.getInstance().getVisualOrder(Minecraft.getInstance().font.substrByWidth(
+                FormattedText.composite(display.getTitle(), Component.literal(" "+translated).withStyle(Translator.translatedStyle)), 1000));
+    }
+
+    private void translateDesc(int j) throws IOException, InterruptedException {
+        AtomicReference<String> descText = new AtomicReference<>("");
+        for (int descIndex = 0; descIndex < description.size(); descIndex++) {
+            FormattedCharSequence descSeq = description.get(descIndex);
+
+            descSeq.accept((var1, var2, var3) -> {
+                descText.set(descText.get() + (char) var3);
+                return true;
+            });
+        }
+
+        if (!Translator.translationCache.containsKey(descText.get())) {
+            Translator.requestTranslateToTraditionalChinese(descText.get());
+            return;
+        }
+
+        String translated = Translator.translationCache.get(descText.get());
+        MutableComponent original = ComponentUtils.mergeStyles(display.getDescription().copy(), Style.EMPTY.withColor(display.getType().getChatColor()));
+        this.description = Language.getInstance().getVisualOrder(this.findOptimalLines(original.append(Component.literal("\n"+translated).withStyle(Translator.translatedStyle)), j));
     }
 }
