@@ -148,7 +148,7 @@ public abstract class BetterAdvancementWidgetMixin {
         }
     }
 
-    @Inject(method = "drawHover", at = @At(value = "INVOKE", target = "drawString", ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "drawHover", at = @At(value = "INVOKE", target = "drawString", ordinal = 0))
     public void drawHoverLeftNoS(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci, @Local(name = "drawX") int drawX) {
         guiGraphics.drawString(this.minecraft.font, this.translatedTitle, drawX + 5 + this.minecraft.font.width(this.title), scrollY + this.y + 9, Translator.translatedStyle.getColor().getValue());
 //        System.out.println("drawString 0 called");
