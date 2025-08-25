@@ -37,6 +37,7 @@ public class LoadMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.endsWith("CloseViewQuestButtonMixin")) return otherLoaded;
         if (mixinClassName.endsWith("BaseScreenMixin")) return otherLoaded;
         if (mixinClassName.endsWith("AdvancementWidgetMixin")) return true;
+        if (mixinClassName.endsWith("BetterAdvancementWidgetMixin")) return true;
         return false;
     }
 

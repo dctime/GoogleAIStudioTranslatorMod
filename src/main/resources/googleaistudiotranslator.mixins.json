@@ -14,7 +14,8 @@
     "ftbquests.BaseScreenMixin",
     "ftbquests.CloseViewQuestButtonMixin",
     "ftbquests.PinViewQuestButtonMixin",
-    "AdvancementWidgetMixin"
+    "AdvancementWidgetMixin",
+    "BetterAdvancementWidgetMixin"
   ],
   "injectors": {
     "defaultRequire": 1
