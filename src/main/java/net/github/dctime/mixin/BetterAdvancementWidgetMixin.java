@@ -5,6 +5,7 @@ import betteradvancements.common.gui.BetterAdvancementWidget;
 import betteradvancements.common.gui.BetterAdvancementsScreen;
 import betteradvancements.common.util.CriterionGrid;
 import com.llamalad7.mixinextras.sugar.Local;
+import net.github.dctime.Config;
 import net.github.dctime.libs.Translator;
 import net.minecraft.advancements.AdvancementNode;
 import net.minecraft.advancements.AdvancementProgress;
@@ -84,6 +85,10 @@ public abstract class BetterAdvancementWidgetMixin {
 //        System.out.println("Will this work");
         tempTitle = this.title;
         tempDescription = description.stream().toList();
+
+        if (!Config.ENABLE_ADVANCEMENTS_CONFIG.get()) return;
+
+        // tempMaxWidth stores changes in translatedTitle and translatedDesc
         tempMaxWidth = this.width;
 
         try {

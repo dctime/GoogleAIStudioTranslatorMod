@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 public class LoadMixinPlugin implements IMixinConfigPlugin {
-    private static boolean otherLoaded = false;
+    private static boolean ftbquestsLoaded = false;
+    private static boolean betteradvancementsLoaded = false;
     private static final Logger LOGGER = LoggerFactory.getLogger(LoadMixinPlugin.class);
 
     @Override
@@ -25,19 +26,25 @@ public class LoadMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (LoadingModList.get().getModFileById("ftbquests") != null && !otherLoaded) {
-            otherLoaded = true;
+        if (LoadingModList.get().getModFileById("ftbquests") != null && !ftbquestsLoaded) {
+            ftbquestsLoaded = true;
             LOGGER.info("FTB Quests is loaded, applying mixins for FTB Quests compatibility.");
         }
-        if (mixinClassName.endsWith("ViewQuestPanelMixin")) return otherLoaded;
-        if (mixinClassName.endsWith("TextFieldMixin")) return otherLoaded;
-        if (mixinClassName.endsWith("QuestPanelMixin")) return otherLoaded;
-        if (mixinClassName.endsWith("QuestDescriptionFieldMixin")) return otherLoaded;
-        if (mixinClassName.endsWith("PinViewQuestButtonMixin")) return otherLoaded;
-        if (mixinClassName.endsWith("CloseViewQuestButtonMixin")) return otherLoaded;
-        if (mixinClassName.endsWith("BaseScreenMixin")) return otherLoaded;
+
+        if (LoadingModList.get().getModFileById("betteradvancements") != null && !ftbquestsLoaded) {
+            betteradvancementsLoaded = true;
+            LOGGER.info("FTB Quests is loaded, applying mixins for FTB Quests compatibility.");
+        }
+
+        if (mixinClassName.endsWith("ViewQuestPanelMixin")) return ftbquestsLoaded;
+        if (mixinClassName.endsWith("TextFieldMixin")) return ftbquestsLoaded;
+        if (mixinClassName.endsWith("QuestPanelMixin")) return ftbquestsLoaded;
+        if (mixinClassName.endsWith("QuestDescriptionFieldMixin")) return ftbquestsLoaded;
+        if (mixinClassName.endsWith("PinViewQuestButtonMixin")) return ftbquestsLoaded;
+        if (mixinClassName.endsWith("CloseViewQuestButtonMixin")) return ftbquestsLoaded;
+        if (mixinClassName.endsWith("BaseScreenMixin")) return ftbquestsLoaded;
         if (mixinClassName.endsWith("AdvancementWidgetMixin")) return true;
-        if (mixinClassName.endsWith("BetterAdvancementWidgetMixin")) return true;
+        if (mixinClassName.endsWith("BetterAdvancementWidgetMixin")) return betteradvancementsLoaded;
         return false;
     }
 
