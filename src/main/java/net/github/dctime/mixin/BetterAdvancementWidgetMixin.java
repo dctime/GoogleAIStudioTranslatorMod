@@ -18,7 +18,6 @@ import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -28,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.io.IOException;
 import java.util.List;
 
 @Mixin(BetterAdvancementWidget.class)
@@ -73,6 +73,7 @@ public abstract class BetterAdvancementWidgetMixin {
     private List<FormattedCharSequence> tempDescription;
     private String tempTitle;
     private String translatedTitle;
+    private int tempMaxWidth;
 
     @Shadow
     protected abstract List<FormattedText> findOptimalLines(Component line, int width);
@@ -80,11 +81,39 @@ public abstract class BetterAdvancementWidgetMixin {
     @Inject(method = "drawHover", at = @At(value = "FIELD", target = "width", ordinal = 0))
     public void onDrawHover(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci) {
         // end of line 276
-        System.out.println("Will this work");
+//        System.out.println("Will this work");
         tempTitle = this.title;
         tempDescription = description.stream().toList();
+        tempMaxWidth = this.width;
 
-        this.translatedTitle = " " + "This is translated title";
+        try {
+            translateTitle();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            translateDesc();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        this.width = tempMaxWidth + 8;
+        this.title = tempTitle; // render 一開始的 title 就好 translatedTitle 用另一個 Inject 渲染
+    }
+
+    private void translateTitle() throws IOException, InterruptedException {
+        if (!Translator.translationCache.containsKey(this.title)) {
+            Translator.requestTranslateToTraditionalChinese(this.title);
+            return;
+        }
+
+        this.translatedTitle = " " + Translator.translationCache.get(this.title);
         this.title = this.title + this.translatedTitle;
 
         // resize UI
@@ -97,46 +126,51 @@ public abstract class BetterAdvancementWidgetMixin {
         int titleWidth = 29 + Minecraft.getInstance().font.width(this.title) + k;
         BetterAdvancementsScreen screen = this.betterAdvancementTabGui.getScreen();
         this.criterionGrid = CriterionGrid.findOptimalCriterionGrid(this.advancementNode.holder(), this.advancementNode.advancement(), this.advancementProgress, screen.width / 2, Minecraft.getInstance().font);
-        int maxWidth;
+
         if (CriterionGrid.requiresShift && !Screen.hasShiftDown()) {
-            maxWidth = titleWidth;
+            tempMaxWidth = titleWidth;
         } else {
-            maxWidth = Math.max(titleWidth, this.criterionGrid.width);
+            tempMaxWidth = Math.max(titleWidth, this.criterionGrid.width);
+        }
+    }
+    private void translateDesc() throws IOException, InterruptedException {
+        String originalDesc = this.displayInfo.getDescription().getString();
+        if (!Translator.translationCache.containsKey(originalDesc)) {
+            Translator.requestTranslateToTraditionalChinese(originalDesc);
+            return;
         }
 
-        this.description = Language.getInstance().getVisualOrder(this.findOptimalLines(ComponentUtils.mergeStyles(this.displayInfo.getDescription().copy().append(Component.literal("\n[MODDDD]").withStyle(Translator.translatedStyle)), Style.EMPTY.withColor(this.displayInfo.getType().getChatColor())), maxWidth));
+        String translatedDesc = Translator.translationCache.get(originalDesc);
+        this.description = Language.getInstance().getVisualOrder(this.findOptimalLines(ComponentUtils.mergeStyles(this.displayInfo.getDescription().copy().append(Component.literal("\n"+translatedDesc).withStyle(Translator.translatedStyle)), Style.EMPTY.withColor(this.displayInfo.getType().getChatColor())), tempMaxWidth));
 
         for(FormattedCharSequence line : this.description) {
-            maxWidth = Math.max(maxWidth, Minecraft.getInstance().font.width(line));
+            tempMaxWidth = Math.max(tempMaxWidth, Minecraft.getInstance().font.width(line));
         }
-
-        this.width = maxWidth + 8;
-        this.title = tempTitle;
     }
 
     @Inject(method = "drawHover", at = @At(value = "INVOKE", target = "drawString", ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD)
     public void drawHoverLeftNoS(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci, @Local(name = "drawX") int drawX) {
         guiGraphics.drawString(this.minecraft.font, this.translatedTitle, drawX + 5 + this.minecraft.font.width(this.title), scrollY + this.y + 9, Translator.translatedStyle.getColor().getValue());
-        System.out.println("drawString 0 called");
+//        System.out.println("drawString 0 called");
     }
 
-    @Inject(method = "drawHover", at = @At(value = "INVOKE", target = "drawString", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
-    public void drawHoverLeftS(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci, @Local(name = "s") String s, @Local(name = "i") int i) {
+//    @Inject(method = "drawHover", at = @At(value = "INVOKE", target = "drawString", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
+//    public void drawHoverLeftS(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci, @Local(name = "s") String s, @Local(name = "i") int i) {
 //        guiGraphics.drawString(this.minecraft.font, this.translatedTitle, scrollX + this.x - i + this.minecraft.font.width(s), scrollY + this.y + 9, Translator.translatedStyle.getColor().getValue());
-        System.out.println("drawString 1 called");
-    }
+//        System.out.println("drawString 1 called");
+//    }
 
     @Inject(method = "drawHover", at = @At(value = "INVOKE", target = "drawString", ordinal = 2))
     public void drawHoverRightNoS(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci) {
         guiGraphics.drawString(this.minecraft.font, this.translatedTitle, scrollX + this.x + 32 + this.minecraft.font.width(this.title), scrollY + this.y + 9, Translator.translatedStyle.getColor().getValue());
-        System.out.println("drawString 2 called");
+//        System.out.println("drawString 2 called");
     }
 
-    @Inject(method = "drawHover", at = @At(value = "INVOKE", target = "drawString", ordinal = 3), locals = LocalCapture.CAPTURE_FAILHARD)
-    public void drawHoverRightS(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci, @Local(name = "s") String s, @Local(name = "i") int i) {
+//    @Inject(method = "drawHover", at = @At(value = "INVOKE", target = "drawString", ordinal = 3), locals = LocalCapture.CAPTURE_FAILHARD)
+//    public void drawHoverRightS(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci, @Local(name = "s") String s, @Local(name = "i") int i) {
 //        guiGraphics.drawString(this.minecraft.font, this.translatedTitle, scrollX + this.x + this.width - i - 5 + this.minecraft.font.width(s), scrollY + this.y + 9, Translator.translatedStyle.getColor().getValue());
-        System.out.println("drawString 3 called");
-    }
+//        System.out.println("drawString 3 called");
+//    }
 
     @Inject(method = "drawHover", at = @At(value = "RETURN"))
     public void endDrawHover(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci) {
