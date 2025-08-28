@@ -91,15 +91,17 @@ public class Translator {
     }
 
 public static void requestTranslateToTraditionalChinese(String textInEnglish) throws IOException, InterruptedException {
-        HttpRequest req = setupRequest(textInEnglish);
+        String textInEnglishFixed = textInEnglish.replace("\"", "\\\"");
+//        System.out.println("TextInEnglishFixed: " + textInEnglishFixed);
+        HttpRequest req = setupRequest(textInEnglishFixed);
         if (req == null) {
             LOGGER.warn("HTTP request is NULL.");
             return;
         }
 
-        if (containsChinese(textInEnglish)) {
-            translationCache.put(textInEnglish, "");
-            LOGGER.debug("Text contains Chinese, skipping translation: " + textInEnglish);
+        if (containsChinese(textInEnglishFixed)) {
+            translationCache.put(textInEnglishFixed, "");
+            LOGGER.debug("Text contains Chinese, skipping translation: " + textInEnglishFixed);
             return;
         }
 
@@ -183,7 +185,7 @@ public static void requestTranslateToTraditionalChinese(String textInEnglish) th
                                     .replaceAll("\\p{Cntrl}", "")
                                     .trim();
                             translationCache.put(textInEnglish, translatedText);
-                            LOGGER.debug("Translated: " + textInEnglish + " -> " + translatedText);
+                            LOGGER.debug("Translated: " + textInEnglishFixed + " -> " + translatedText);
                         }
 
                         LOGGER.debug("status: " + resp.statusCode());
