@@ -9,13 +9,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.TickEvent;
 
-@EventBusSubscriber(modid = GoogleAIStudioTranslatorClient.MODID, value = Dist.CLIENT)
+//import net.neoforged.fml.common.EventBusSubscriber;
+//import net.neoforged.neoforge.client.event.ClientTickEvent;
+
+@Mod.EventBusSubscriber(modid = GoogleAIStudioTranslatorClient.MODID, value = Dist.CLIENT)
 public class OnClientTickEvent {
     @SubscribeEvent // on the game event bus only on the physical client
-    public static void onClientTick(ClientTickEvent.Post event) {
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
         while (KeyMapping.DELETE_TRANSLATION_CACHE.get().consumeClick()) {
             Translator.clearCache();
         }

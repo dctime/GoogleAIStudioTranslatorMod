@@ -1,5 +1,6 @@
 package net.github.dctime.mixin.ftbquests;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.ftb.mods.ftblibrary.ui.*;
 import dev.ftb.mods.ftblibrary.ui.misc.CompactGridLayout;
 import dev.ftb.mods.ftbquests.client.gui.quests.*;
@@ -34,8 +35,10 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
     private BlankPanel panelText;
     @Shadow
     private BlankPanel panelTasks;
-    @Shadow
+
     private BlankPanel panelRewards;
+
+
     @Shadow
     private final QuestScreen questScreen;
     @Shadow
@@ -58,6 +61,8 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         super(panel);
         this.questScreen = questScreen;
     }
+
+
 
     private void resizeUI() {
         // Translation successful, do some ui adjustment
@@ -249,6 +254,11 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         isViewQuestPanelTranslated = false;
         isDescriptionTranslated = null;
         translationLeft = -1;
+    }
+
+    @Inject(method = "addWidgets", at = @At("RETURN"))
+    public void onAddWidgets(CallbackInfo ci, @Local(name = "panelRewards") BlankPanel panelRewards) {
+        this.panelRewards = panelRewards;
     }
 
     private boolean translateFormattedText(FormattedTextGetterSetter formattedTextGetter) {

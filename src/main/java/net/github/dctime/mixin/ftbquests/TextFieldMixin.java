@@ -24,9 +24,6 @@ public abstract class TextFieldMixin extends Widget implements FormattedTextGett
     private FormattedText rawTranslatedText;
 
     @Shadow
-    public abstract TextField reflow();
-
-    @Shadow
     public abstract TextField resize(Theme theme);
 
     @Shadow

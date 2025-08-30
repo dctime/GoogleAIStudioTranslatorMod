@@ -3,14 +3,14 @@ package net.github.dctime;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.common.util.Lazy;
 import org.lwjgl.glfw.GLFW;
 
-@EventBusSubscriber(modid = GoogleAIStudioTranslatorClient.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = GoogleAIStudioTranslatorClient.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class KeyMapping {
     public static final Lazy<net.minecraft.client.KeyMapping> DELETE_TRANSLATION_CACHE = Lazy.of(() -> new net.minecraft.client.KeyMapping(
             "key."+GoogleAIStudioTranslatorClient.MODID+".delete_translation_cache",
