@@ -3,6 +3,7 @@ package net.github.dctime.mixin;
 import com.google.common.collect.ImmutableList;
 import net.github.dctime.Config;
 import net.github.dctime.libs.Translator;
+import net.minecraft.advancements.AdvancementNode;
 import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -46,7 +47,8 @@ public abstract class AdvancementWidgetMixin {
     private int tempWidth;
 
     @Shadow
-    protected abstract int getMaxProgressWidth();
+    @Final
+    private AdvancementNode advancementNode;
 
     @Shadow
     protected abstract List<FormattedText> findOptimalLines(Component component, int maxWidth);
@@ -67,14 +69,20 @@ public abstract class AdvancementWidgetMixin {
         }
 
         // some var define
+        int i = advancementNode.advancement().requirements().size();
+        int j = String.valueOf(i).length();
+        int k = i > 1 ? Minecraft.getInstance().font.width("  ") + Minecraft.getInstance().font.width("0") * j * 2 + Minecraft.getInstance().font.width("/") : 0;
+        int l = 29 + Minecraft.getInstance().font.width(this.title) + k;
+        this.description = Language.getInstance().getVisualOrder(this.findOptimalLines(ComponentUtils.mergeStyles(display.getDescription().copy(), Style.EMPTY.withColor(display.getType().getChatColor())), l));
 
-        int i = getMaxProgressWidth();
-        int j = 29 + Minecraft.getInstance().font.width(this.title) + i;
+        for(FormattedCharSequence formattedcharsequence : this.description) {
+            l = Math.max(l, Minecraft.getInstance().font.width(formattedcharsequence));
+        }
 
         // replace orignal description
 
         try {
-            translateDesc(j);
+            translateDesc(l);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
@@ -84,18 +92,20 @@ public abstract class AdvancementWidgetMixin {
         // replace width
 
         for(FormattedCharSequence formattedcharsequence : this.description) {
-            j = Math.max(j, Minecraft.getInstance().font.width(formattedcharsequence));
+            l = Math.max(l, Minecraft.getInstance().font.width(formattedcharsequence));
         }
 
-        this.width = j + 3 + 5;
+        this.width = l + 3 + 5;
     }
 
     @Inject(method="drawHover", at = @At(value = "RETURN"))
     public void endDrawHover(GuiGraphics guiGraphics, int x, int y, float fade, int width, int height, CallbackInfo ci) {
         this.title = Language.getInstance().getVisualOrder(Minecraft.getInstance().font.substrByWidth(display.getTitle(), 163));
-        int i = getMaxProgressWidth();
-        int j = 29 + Minecraft.getInstance().font.width(this.title) + i;
-        this.description = Language.getInstance().getVisualOrder(this.findOptimalLines(ComponentUtils.mergeStyles(display.getDescription().copy(), Style.EMPTY.withColor(display.getType().getChatColor())), j));
+        int i = advancementNode.advancement().requirements().size();
+        int j = String.valueOf(i).length();
+        int k = i > 1 ? Minecraft.getInstance().font.width("  ") + Minecraft.getInstance().font.width("0") * j * 2 + Minecraft.getInstance().font.width("/") : 0;
+        int l = 29 + Minecraft.getInstance().font.width(this.title) + k;
+        this.description = Language.getInstance().getVisualOrder(this.findOptimalLines(ComponentUtils.mergeStyles(display.getDescription().copy(), Style.EMPTY.withColor(display.getType().getChatColor())), l));
         this.width = tempWidth;
     }
 

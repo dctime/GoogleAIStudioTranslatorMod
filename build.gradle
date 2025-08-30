@@ -183,7 +183,7 @@ dependencies {
     implementation "curse.maven:jade-324717:5109393"
 
 
-    implementation "curse.maven:better-advancements-272515:5438621"
+    compileOnly "curse.maven:better-advancements-272515:5438621"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
