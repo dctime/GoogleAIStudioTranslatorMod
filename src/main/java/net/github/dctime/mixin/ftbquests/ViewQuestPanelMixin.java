@@ -269,7 +269,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
 
             return true;
         } else {
-            LOGGER.debug("Translating text: " + totalText);
+//            LOGGER.debug("Translating text: " + totalText);
             try {
                 Translator.requestTranslateToTraditionalChinese(totalText);
             } catch (IOException ex) {

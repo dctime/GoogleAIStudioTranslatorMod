@@ -77,7 +77,7 @@ public class Translator {
         return req;
     }
 
-    private static @NotNull String getJsonBody(String image, String prompt) {
+    private static String getJsonBody(String image, String prompt) {
         String jsonBody;
         if (image == null) {
             jsonBody = """
@@ -99,7 +99,7 @@ public class Translator {
                          { "text": "
                     """ + prompt + "\"},{ \"inline_data\": {\"mime_type\": \"image/png\",\"data\":\"" + image + "\"}}]}]}";
         }
-        System.out.println("Decoder test:\n" + jsonBody);
+//        System.out.println("Decoder test:\n" + jsonBody);
 
         return jsonBody;
     }

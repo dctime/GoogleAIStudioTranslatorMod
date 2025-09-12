@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ScreenshotEvent;
 
@@ -20,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 
-@Mod.EventBusSubscriber(modid = GoogleAIStudioTranslatorClient.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@EventBusSubscriber(modid = GoogleAIStudioTranslatorClient.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ScreenShotEvent {
     public static String lastScreenShotImage = null;
     @SubscribeEvent
