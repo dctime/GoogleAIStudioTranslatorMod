@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,22 +47,17 @@ public class Translator {
         player.sendSystemMessage(Component.literal("清除翻譯快取").withStyle(ChatFormatting.YELLOW));
     }
 
-    @Nullable
-    private static HttpRequest setupRequest(String textInEnglish) {
+    private static HttpRequest setupRequest(String textInEnglish, @Nullable String image) {
 //        String model = "gemma-3-27b-it";
         String model = Config.MODEL_NAME.get();
         String url = String.format("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent", model);
 //
         String prompt = Config.PROMPT.get() + "\n" + textInEnglish;
-        String jsonBody = """
-                {
-                  "contents": [
-                    { "parts": [ { "text": "
-                """ + prompt + """
-                "} ] }
-                  ]
-                }
-                """;
+        if (image != null) {
+            prompt = Config.PROMPT_SCREENSHOT.get();
+        }
+
+        String jsonBody = getJsonBody(image, prompt);
 
         String apiKey = Config.API_KEY.get();
 //        if (apiKey.isBlank()) return null; // TODO:
@@ -82,6 +78,33 @@ public class Translator {
         return req;
     }
 
+    private static @NotNull String getJsonBody(String image, String prompt) {
+        String jsonBody;
+        if (image == null) {
+            jsonBody = """
+                {
+                  "contents": [
+                    { "parts": [
+                     { "text": "
+                """ + prompt + """
+                "}
+                ]}
+                  ]
+                }
+                """;
+        } else {
+            jsonBody = """
+                    {
+                      "contents": [
+                        { "parts": [
+                         { "text": "
+                    """ + prompt + "\"},{ \"inline_data\": {\"mime_type\": \"image/png\",\"data\":\"" + image + "\"}}]}]}";
+        }
+        System.out.println("Decoder test:\n" + jsonBody);
+
+        return jsonBody;
+    }
+
     private static boolean containsChinese(String str) {
         if (str == null) {
             return false;
@@ -90,10 +113,14 @@ public class Translator {
         return Pattern.compile("[\u4e00-\u9fa5]").matcher(str).find();
     }
 
-public static void requestTranslateToTraditionalChinese(String textInEnglish) throws IOException, InterruptedException {
+    public static void requestTranslateToTraditionalChinese(String textInEnglish) throws IOException, InterruptedException {
+        requestTranslateToTraditionalChinese(textInEnglish, null);
+    }
+
+    public static void requestTranslateToTraditionalChinese(String textInEnglish, String image) throws IOException, InterruptedException {
         String textInEnglishFixed = textInEnglish.replace("\"", "\\\"");
 //        System.out.println("TextInEnglishFixed: " + textInEnglishFixed);
-        HttpRequest req = setupRequest(textInEnglishFixed);
+        HttpRequest req = setupRequest(textInEnglishFixed, image);
         if (req == null) {
             LOGGER.warn("HTTP request is NULL.");
             return;
@@ -184,8 +211,19 @@ public static void requestTranslateToTraditionalChinese(String textInEnglish) th
                                     .replace("\n", " ")
                                     .replaceAll("\\p{Cntrl}", "")
                                     .trim();
-                            translationCache.put(textInEnglish, translatedText);
-                            LOGGER.debug("Translated: " + textInEnglishFixed + " -> " + translatedText);
+                            if (image == null) {
+                                translationCache.put(textInEnglish, translatedText);
+                                LOGGER.debug("Translated: " + textInEnglishFixed + " -> " + translatedText);
+                            } else {
+                                final String finalTranslatedText = translatedText;
+                                Minecraft.getInstance().execute(()->{
+                                    if (Minecraft.getInstance().player != null) {
+                                        Minecraft.getInstance().player.sendSystemMessage(
+                                                Component.literal("螢幕翻譯結果: \n" + finalTranslatedText).withStyle(Translator.translatedStyle)
+                                        );
+                                    }
+                                });
+                            }
                         }
 
                         LOGGER.debug("status: " + resp.statusCode());

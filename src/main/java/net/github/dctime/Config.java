@@ -47,6 +47,20 @@ public class Config {
                             "5) 標點與大小寫盡量貼近原風格(專有名詞維持大小寫)。\n" +
                             "待翻譯：\n"
             );
+
+    public static final String PROMPT_SCREENSHOT_PATH = "prompt_screenshot";
+    public static final ModConfigSpec.ConfigValue<String> PROMPT_SCREENSHOT = BUILDER
+            .comment("The prompt to use for translation screenshots [翻譯螢幕截圖時使用的提示語]\n")
+            .define(PROMPT_SCREENSHOT_PATH,
+                    """
+                    請在圖片上找到所有的英文(不包含沒有英文的數字)並且翻譯成繁體中文
+                    
+                    翻譯的格式為
+                    畫面簡介:xxx\\n
+                    xxx/xxx\\n(原文英文1/中文1)(括號裡不需要顯示)
+                    xxx/xxx\\n(原文英文2/中文2)(括號裡不需要顯示)
+                    """
+            );
 //
 //    // (Optional) 更嚴格版本：要求只輸出純文字一行，避免代碼框/前後空白
 //    public static final ModConfigSpec.ConfigValue<String> PROMPT_STRICT = BUILDER
@@ -78,6 +92,11 @@ public class Config {
     public static final ModConfigSpec.BooleanValue ENABLE_ADVANCEMENTS_CONFIG = BUILDER
             .comment("Whether to enable Advancements translation [是否啟用成就翻譯] (預設 true)")
             .define(ENABLE_ADVANCEMENTS_CONFIG_PATH, true);
+
+    public static final String ENABLE_SCREENSHOT_CONFIG_PATH = "enable_screenshot_translation";
+    public static final ModConfigSpec.BooleanValue ENABLE_SCREENSHOT_CONFIG = BUILDER
+            .comment("Whether to enable Screenshot translation [是否啟用螢幕截圖翻譯] (預設 true)")
+            .define(ENABLE_SCREENSHOT_CONFIG_PATH, true);
 
     // // Example of item list config (kept as reference):
     // public static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
