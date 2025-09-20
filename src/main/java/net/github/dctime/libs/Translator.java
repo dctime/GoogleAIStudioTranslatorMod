@@ -3,6 +3,7 @@ package net.github.dctime.libs;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.github.dctime.Config;
+import net.github.dctime.events.ScreenEventRender;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -220,6 +221,7 @@ public class Translator {
                                         Minecraft.getInstance().player.sendSystemMessage(
                                                 Component.literal("螢幕翻譯結果: \n" + finalTranslatedText).withStyle(Translator.translatedStyle)
                                         );
+                                        sendDataToScreen(finalTranslatedText);
                                     }
                                 });
                             }
@@ -230,5 +232,10 @@ public class Translator {
                         translating = false;
                     }
                 });
+    }
+
+    private static void sendDataToScreen(String finalTranslatedText) {
+
+        ScreenEventRender.setRenderText(finalTranslatedText);
     }
 }

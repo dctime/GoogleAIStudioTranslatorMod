@@ -13,6 +13,7 @@ public class LanguageProvider extends net.neoforged.neoforge.common.data.Languag
     @Override
     protected void addTranslations() {
         add("key."+GoogleAIStudioTranslatorClient.MODID+".delete_translation_cache", "Delete Translation Cache");
+        add("key."+GoogleAIStudioTranslatorClient.MODID+".show_translation_in_gui", "Show Translation in GUI (Hold)");
         add("key.categories."+GoogleAIStudioTranslatorClient.MODID+".key_mapping_category", "Google AI Studio Translator");
         add(GoogleAIStudioTranslatorClient.MODID+".configuration."+ Config.API_KEY_PATH, "API Key (API 金鑰)");
         add(GoogleAIStudioTranslatorClient.MODID+".configuration."+ Config.MODEL_NAME_PATH, "Model Name (模型名稱)");

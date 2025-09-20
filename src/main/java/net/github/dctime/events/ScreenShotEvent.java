@@ -10,14 +10,12 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ScreenshotEvent;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 
@@ -46,6 +44,7 @@ public class ScreenShotEvent {
         if (Translator.translating) {
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance().player.sendSystemMessage(Component.literal("翻譯器正在忙碌中，請稍後再截圖。").withStyle(ChatFormatting.YELLOW));
+                ScreenEventRender.setRenderText("翻譯器正在忙碌中，請稍後再截圖。");
                 return;
             }
         }
@@ -54,6 +53,7 @@ public class ScreenShotEvent {
             Translator.requestTranslateToTraditionalChinese(":", lastScreenShotImage);
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance().player.sendSystemMessage(Component.literal("螢幕截圖翻譯中...").withStyle(ChatFormatting.GREEN));
+                ScreenEventRender.setRenderText("螢幕截圖翻譯中...");
             }
         } catch (IOException | InterruptedException e) {
             if (Minecraft.getInstance().player != null) {
