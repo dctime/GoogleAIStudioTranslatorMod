@@ -15,6 +15,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * Example config class for the translation mod.
  * 使用 NeoForge 的設定 API，集中管理模組設定。
  */
+
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
