@@ -79,7 +79,7 @@ public abstract class BetterAdvancementWidgetMixin {
     @Shadow(remap = false)
     protected abstract List<FormattedText> findOptimalLines(Component line, int width);
 
-    @Inject(method = "drawHover", at = @At(value = "FIELD", target = "width", ordinal = 0), remap = false)
+    @Inject(method = "Lbetteradvancements/common/gui/BetterAdvancementWidget;drawHover(Lnet/minecraft/client/gui/GuiGraphics;IIFII)V", at = @At(value = "FIELD", target = "width", ordinal = 0), remap = false)
     public void onDrawHover(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci) {
         // end of line 276
 //        System.out.println("Will this work");
@@ -153,7 +153,7 @@ public abstract class BetterAdvancementWidgetMixin {
         }
     }
 
-    @Inject(method = "drawHover", at = @At(value = "INVOKE", target = "drawString", ordinal = 0), remap = false)
+    @Inject(method = "Lbetteradvancements/common/gui/BetterAdvancementWidget;drawHover(Lnet/minecraft/client/gui/GuiGraphics;IIFII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)I", ordinal = 0))
     public void drawHoverLeftNoS(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci, @Local(name = "drawX") int drawX) {
         guiGraphics.drawString(this.minecraft.font, this.translatedTitle, drawX + 5 + this.minecraft.font.width(this.title), scrollY + this.y + 9, Translator.translatedStyle.getColor().getValue());
 //        System.out.println("drawString 0 called");
@@ -165,7 +165,7 @@ public abstract class BetterAdvancementWidgetMixin {
 //        System.out.println("drawString 1 called");
 //    }
 
-    @Inject(method = "drawHover", at = @At(value = "INVOKE", target = "drawString", ordinal = 2), remap = false)
+    @Inject(method = "Lbetteradvancements/common/gui/BetterAdvancementWidget;drawHover(Lnet/minecraft/client/gui/GuiGraphics;IIFII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)I", ordinal = 2))
     public void drawHoverRightNoS(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci) {
         guiGraphics.drawString(this.minecraft.font, this.translatedTitle, scrollX + this.x + 32 + this.minecraft.font.width(this.title), scrollY + this.y + 9, Translator.translatedStyle.getColor().getValue());
 //        System.out.println("drawString 2 called");
@@ -177,7 +177,7 @@ public abstract class BetterAdvancementWidgetMixin {
 //        System.out.println("drawString 3 called");
 //    }
 
-    @Inject(method = "drawHover", at = @At(value = "RETURN"), remap = false)
+    @Inject(method = "Lbetteradvancements/common/gui/BetterAdvancementWidget;drawHover(Lnet/minecraft/client/gui/GuiGraphics;IIFII)V", at = @At(value = "RETURN"), remap = false)
     public void endDrawHover(GuiGraphics guiGraphics, int scrollX, int scrollY, float fade, int left, int top, CallbackInfo ci) {
         this.translatedTitle = "";
         this.title = tempTitle;
