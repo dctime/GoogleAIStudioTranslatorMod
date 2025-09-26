@@ -45,6 +45,7 @@ public class ScreenShotEvent {
         if (Translator.translating) {
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance().player.sendSystemMessage(Component.literal("翻譯器正在忙碌中，請稍後再截圖。").withStyle(ChatFormatting.YELLOW));
+                ScreenEventRender.setRenderText("翻譯器正在忙碌中，請稍後再截圖。");
                 return;
             }
         }
@@ -53,6 +54,7 @@ public class ScreenShotEvent {
             Translator.requestTranslateToTraditionalChinese(":", lastScreenShotImage);
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance().player.sendSystemMessage(Component.literal("螢幕截圖翻譯中...").withStyle(ChatFormatting.GREEN));
+                ScreenEventRender.setRenderText("螢幕截圖翻譯中...");
             }
         } catch (IOException | InterruptedException e) {
             if (Minecraft.getInstance().player != null) {

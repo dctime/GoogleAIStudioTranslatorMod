@@ -170,14 +170,14 @@ dependencies {
     //https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge
     compileOnly("curse.maven:ftb-quests-forge-289412:5494845")
 
-//    //https://www.curseforge.com/minecraft/mc-mods/ftb-teams-forge
-//    runtimeOnly("curse.maven:ftb-teams-forge-404468:5202951")
-//    //https://www.curseforge.com/minecraft/mc-mods/architectury-api
-//    runtimeOnly("curse.maven:architectury-api-419699:5173990")
-//    //https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge
-//    runtimeOnly("curse.maven:ftb-library-forge-404465:5567594")
-//    //https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge
-//    runtimeOnly("curse.maven:ftb-quests-forge-289412:5494845")
+    //https://www.curseforge.com/minecraft/mc-mods/ftb-teams-forge
+    runtimeOnly("curse.maven:ftb-teams-forge-404468:5202951")
+    //https://www.curseforge.com/minecraft/mc-mods/architectury-api
+    runtimeOnly("curse.maven:architectury-api-419699:5173990")
+    //https://www.curseforge.com/minecraft/mc-mods/ftb-library-forge
+    runtimeOnly("curse.maven:ftb-library-forge-404465:5567594")
+    //https://www.curseforge.com/minecraft/mc-mods/ftb-quests-forge
+    runtimeOnly("curse.maven:ftb-quests-forge-289412:5494845")
 
 //    implementation "maven.modrinth:jade:${jade_version}"
     implementation "curse.maven:jade-324717:5109393"
@@ -185,7 +185,7 @@ dependencies {
     runtimeOnly("curse.maven:mekanism-268560:5316226")
 
 
-    compileOnly "curse.maven:better-advancements-272515:5438621"
+    implementation "curse.maven:better-advancements-272515:5438621"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
