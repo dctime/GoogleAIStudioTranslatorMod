@@ -1,16 +1,17 @@
 package net.github.dctime.mixin.ftbquests;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.ftb.mods.ftblibrary.ui.*;
 import dev.ftb.mods.ftblibrary.ui.misc.CompactGridLayout;
-import dev.ftb.mods.ftbquests.client.gui.quests.*;
+import dev.ftb.mods.ftbquests.gui.quests.QuestScreen;
+import dev.ftb.mods.ftbquests.gui.quests.ViewQuestPanel;
 import dev.ftb.mods.ftbquests.quest.Quest;
 import net.github.dctime.Config;
 import net.github.dctime.libs.*;
 import net.github.dctime.libs.ftbquests.FormattedTextGetterSetter;
 import net.github.dctime.libs.ftbquests.ICloseViewQuestButton;
 import net.github.dctime.libs.ftbquests.IPinViewQuestButton;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Mixin(ViewQuestPanel.class)
-public abstract class ViewQuestPanelMixin extends ModalPanel {
+public abstract class ViewQuestPanelMixin extends Panel {
 
     @Shadow(remap = false)
     private TextField titleField;
@@ -68,16 +69,18 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         // Translation successful, do some ui adjustment
         // title width limit
 
+        if (this.quest == null) return;
+
         int width = Math.max(200, this.titleField.width + 54);
-        if (this.quest.getMinWidth() > 0) {
-            width = Math.max(this.quest.getMinWidth(), width);
+        if (this.quest.minWidth > 0) {
+            width = Math.max(this.quest.minWidth, width);
         }
 //                else if (this.questScreen.getSelectedChapter().isPresent()) {
 //                    if (this.questScreen.getSelectedChapter().get().getDefaultMinWidth() > 0) {
 //                        width = Math.max(this.questScreen.getSelectedChapter().get().getDefaultMinWidth(), width);
 //                    }
 //                }
-        this.setWidth(Math.max(width, this.getWidth()));
+        this.setWidth(Math.max(width, this.width));
 //                this.panelContent.setPosAndSize(0, Math.max(16, this.titleField.height + 8), this.getWidth(), 0);
 //                this.panelContent.setHeight(this.height - 17);
         // TODO: Get quest screen and modify modal panel width
@@ -89,7 +92,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
 //                    }
 //                }
         this.setPos((this.parent.width - this.width) / 2, (this.parent.height - this.height) / 2);
-        int w2 = this.getWidth()/2;
+        int w2 = this.width/2;
 
 //                this.panelTasks.setPosAndSize(2, 16, w2 - 3, this.panelTasks.height);
 //                this.panelRewards.setPosAndSize(w2 + 2, 16, w2 - 3, this.panelRewards.height);
@@ -112,17 +115,17 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         int toy = (this.panelTasks.height - this.panelTasks.getContentHeight()) / 2;
         int roy = (this.panelRewards.height - this.panelRewards.getContentHeight()) / 2;
 
-        for(Widget widgetTasks : this.panelTasks.getWidgets()) {
+        for(Widget widgetTasks : this.panelTasks.widgets) {
             widgetTasks.setX(widgetTasks.posX + tox);
             widgetTasks.setY(widgetTasks.posY + toy);
         }
 
-        for(Widget widgetRewards : this.panelRewards.getWidgets()) {
+        for(Widget widgetRewards : this.panelRewards.widgets) {
             widgetRewards.setX(widgetRewards.posX + rox);
             widgetRewards.setY(widgetRewards.posY + roy);
         }
 
-        for (int widgetID = 0; widgetID < this.panelContent.getWidgets().size(); widgetID++) {
+        for (int widgetID = 0; widgetID < this.panelContent.widgets.size(); widgetID++) {
             Widget contentWidget = this.panelContent.getWidget(widgetID);
             if (contentWidget instanceof TextField taskOrRewardTextField) {
                 int TaskTextID = 3;
@@ -166,7 +169,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
 
         this.panelText.setHeight(this.panelText.align(new WidgetLayout.Vertical(0, 1, 2)));
         this.panelText.setPosAndSize(3, 16 + height + 12, width - 6, this.panelText.height);
-        for (Widget textWidget : this.panelText.getWidgets()) {
+        for (Widget textWidget : this.panelText.widgets) {
             if (textWidget instanceof TextField textField) {
                 textField.setMaxWidth(width - 6);
                 textField.setWidth(width - 6);
@@ -175,7 +178,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
 //                this.setHeight(Math.min(this.panelContent.getContentHeight() + this.titleField.height + 12, this.parent.height - 10));
 //                panelText.getWidgets().get(panelText.getWidgets().size()-1).posY =
         int iconSize = Math.min(16, this.titleField.height + 2);
-        for (Widget viewWidget : this.getWidgets()) {
+        for (Widget viewWidget : this.widgets) {
             if (viewWidget instanceof ICloseViewQuestButton) {
                 viewWidget.setPosAndSize(width - iconSize - 2, 4, iconSize, iconSize);
             } else if (viewWidget instanceof IPinViewQuestButton) {
@@ -196,16 +199,18 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
     }
 
     @Inject(method = "draw", at = @At("HEAD"), remap = false)
-    public void onDraw(GuiGraphics graphics, Theme theme, int x, int y, int w, int h, CallbackInfo ci) {
+    public void onDraw(PoseStack matrixStack, Theme theme, int x, int y, int w, int h, CallbackInfo ci) {
         if (!Config.ENABLE_FTB_QUEST_TRANSLATION.get()) return;
+        if (panelText == null) return;
         translateTitle();
 
         // setup isDescriptionTranslated
+
         if (isDescriptionTranslated == null) {
-            isDescriptionTranslated = new ArrayList<>(panelText.getWidgets().size());
+            isDescriptionTranslated = new ArrayList<>(panelText.widgets.size());
             translationLeft = 0;
-            for (int widgetIndex = 0; widgetIndex < panelText.getWidgets().size(); widgetIndex++) {
-                if (panelText.getWidgets().get(widgetIndex) instanceof FormattedTextGetterSetter formattedTextGetterSetter) {
+            for (int widgetIndex = 0; widgetIndex < panelText.widgets.size(); widgetIndex++) {
+                if (panelText.widgets.get(widgetIndex) instanceof FormattedTextGetterSetter formattedTextGetterSetter) {
                     isDescriptionTranslated.add(false);
                     translationLeft++;
                     LOGGER.debug("Add Translation Task, total: " + translationLeft + "Text: " + (formattedTextGetterSetter.getFormattedText().length > 0 ? formattedTextGetterSetter.getFormattedText()[0].getString() + "length: " + formattedTextGetterSetter.getFormattedText().length : "empty"));
@@ -220,7 +225,7 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         for (int widgetIndex = 0; widgetIndex < isDescriptionTranslated.size(); widgetIndex++) {
             if (isDescriptionTranslated.get(widgetIndex)) continue;
             // not translated yet, so we need to translate it
-            Widget widget = panelText.getWidgets().get(widgetIndex);
+            Widget widget = panelText.widgets.get(widgetIndex);
 
             if (!(widget instanceof FormattedTextGetterSetter formattedTextGetter)) return;
             if (translateFormattedText(formattedTextGetter)) {
@@ -239,9 +244,21 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         }
     }
 
-    @Inject(method = "onClosed", at = @At("HEAD"), remap = false)
-    public void onClosed(CallbackInfo ci) {
+//    @Inject(method = "onClosed", at = @At("HEAD"), remap = false)
+    // FIXME:
+    @Override
+    public void onClosed() {
         LOGGER.debug("Warning OnClosed called, resetting translation state.");
+        isViewQuestPanelTranslated = false;
+        isDescriptionTranslated = null;
+        translationLeft = -1;
+        super.onClosed();
+    }
+
+    @Override
+    public void refreshWidgets() {
+        super.refreshWidgets();
+        LOGGER.debug("Warning RefreshWidgets called, resetting translation state.");
         isViewQuestPanelTranslated = false;
         isDescriptionTranslated = null;
         translationLeft = -1;
@@ -256,10 +273,10 @@ public abstract class ViewQuestPanelMixin extends ModalPanel {
         translationLeft = -1;
     }
 
-    @Inject(method = "addWidgets", at = @At("RETURN"), remap = false)
-    public void onAddWidgets(CallbackInfo ci, @Local(name = "panelRewards") BlankPanel panelRewards) {
-        this.panelRewards = panelRewards;
-    }
+//    @Inject(method = "addWidgets", at = @At("RETURN"), remap = false)
+//    public void onAddWidgets(CallbackInfo ci, @Local(name = "panelRewards") BlankPanel panelRewards) {
+//        this.panelRewards = panelRewards;
+//    }
 
     private boolean translateFormattedText(FormattedTextGetterSetter formattedTextGetter) {
         if (formattedTextGetter.getFormattedText().length < 1) {

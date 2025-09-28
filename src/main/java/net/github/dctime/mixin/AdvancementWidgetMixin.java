@@ -1,12 +1,12 @@
 package net.github.dctime.mixin;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.github.dctime.Config;
 import net.github.dctime.libs.Translator;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.advancements.AdvancementWidget;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.*;
@@ -55,7 +55,7 @@ public abstract class AdvancementWidgetMixin {
 
 
     @Inject(method = "drawHover", at = @At(value = "HEAD"))
-    public void onDrawHover(GuiGraphics guiGraphics, int x, int y, float fade, int width, int height, CallbackInfo ci) {
+    public void onDrawHover(PoseStack poseStack, int x, int y, float fade, int width, int height, CallbackInfo ci) {
         tempWidth = this.width;
 
         if (!Config.ENABLE_ADVANCEMENTS_CONFIG.get()) return;
@@ -99,7 +99,7 @@ public abstract class AdvancementWidgetMixin {
     }
 
     @Inject(method="drawHover", at = @At(value = "RETURN"))
-    public void endDrawHover(GuiGraphics guiGraphics, int x, int y, float fade, int width, int height, CallbackInfo ci) {
+    public void endDrawHover(PoseStack poseStack, int x, int y, float fade, int width, int height, CallbackInfo ci) {
         this.title = Language.getInstance().getVisualOrder(Minecraft.getInstance().font.substrByWidth(display.getTitle(), 163));
         int i = advancement.getRequirements().length;
         int j = String.valueOf(i).length();

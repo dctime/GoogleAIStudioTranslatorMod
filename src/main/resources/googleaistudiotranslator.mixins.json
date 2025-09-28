@@ -8,15 +8,14 @@
 
   ],
   "client": [
-    "ftbquests.ViewQuestPanelMixin",
-    "ftbquests.TextFieldMixin",
-    "ftbquests.QuestPanelMixin",
-    "ftbquests.QuestDescriptionFieldMixin",
-    "ftbquests.BaseScreenMixin",
+    "AdvancementWidgetMixin",
+    "BetterAdvancementWidgetMixin",
     "ftbquests.CloseViewQuestButtonMixin",
     "ftbquests.PinViewQuestButtonMixin",
-    "AdvancementWidgetMixin",
-    "BetterAdvancementWidgetMixin"
+    "ftbquests.QuestDescriptionFieldMixin",
+    "ftbquests.QuestPanelMixin",
+    "ftbquests.TextFieldMixin",
+    "ftbquests.ViewQuestPanelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

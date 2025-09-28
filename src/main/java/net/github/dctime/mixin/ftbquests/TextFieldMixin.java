@@ -14,13 +14,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Mixin(TextField.class)
 public abstract class TextFieldMixin extends Widget implements FormattedTextGetterSetter {
     @Shadow(remap = false)
     private FormattedText[] formattedText;
 
-    @Shadow(remap = false)
-    private Component rawText;
     private FormattedText rawTranslatedText;
 
     @Shadow(remap = false)
@@ -46,7 +47,9 @@ public abstract class TextFieldMixin extends Widget implements FormattedTextGett
         rawTranslatedText = FormattedText.of(" " + text, Translator.translatedStyle);
         // reflow with the translated text
         Theme theme = this.getGui().getTheme();
-        this.formattedText = (FormattedText[])theme.listFormattedStringToWidth(FormattedText.composite(this.rawText, rawTranslatedText), this.maxWidth).toArray(new FormattedText[0]);
+        List<FormattedText> fullText = new java.util.ArrayList<>(Arrays.stream(formattedText).toList());
+        fullText.add(rawTranslatedText);
+        this.formattedText = (FormattedText[])theme.listFormattedStringToWidth(FormattedText.composite(fullText), this.maxWidth).toArray(new FormattedText[0]);
         resize(theme);
     }
 }

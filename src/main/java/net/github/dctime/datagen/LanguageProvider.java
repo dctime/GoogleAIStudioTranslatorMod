@@ -2,11 +2,11 @@ package net.github.dctime.datagen;
 
 import net.github.dctime.Config;
 import net.github.dctime.GoogleAIStudioTranslatorClient;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 
 public class LanguageProvider extends net.minecraftforge.common.data.LanguageProvider {
 
-    public LanguageProvider(PackOutput output) {
+    public LanguageProvider(DataGenerator output) {
         super(output, GoogleAIStudioTranslatorClient.MODID, "en_us");
     }
 

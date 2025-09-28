@@ -1,6 +1,6 @@
 package net.github.dctime.mixin.ftbquests;
 
-import dev.ftb.mods.ftbquests.client.gui.quests.QuestPanel;
+import dev.ftb.mods.ftbquests.gui.quests.QuestPanel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

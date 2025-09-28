@@ -29,7 +29,7 @@ public class ScreenShotEvent {
 //        System.out.println("SCREEN SHOT!");
         NativeImage image = event.getImage();
         try {
-            lastScreenShotImage = pixelsToBase64(image.getPixelsRGBA(), image.getWidth(), image.getHeight());
+            lastScreenShotImage = pixelsToBase64(image.makePixelArray(), image.getWidth(), image.getHeight());
         } catch (Exception e) {
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance().player.sendSystemMessage(Component.literal("螢幕截圖檔案無法翻成Base64" + e.getMessage()).withStyle(ChatFormatting.RED));

@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(targets = "dev.ftb.mods.ftbquests.client.gui.quests.ViewQuestPanel$QuestDescriptionField")
+@Mixin(targets = "dev.ftb.mods.ftbquests.gui.quests.ViewQuestPanel$QuestDescriptionField")
 public abstract class QuestDescriptionFieldMixin extends TextField implements QuestDescriptionFieldGetterSetter {
     public QuestDescriptionFieldMixin(Panel panel) {
         super(panel);

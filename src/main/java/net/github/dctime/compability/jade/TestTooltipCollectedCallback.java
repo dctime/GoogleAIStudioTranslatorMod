@@ -11,6 +11,7 @@ import snownee.jade.impl.ui.TextElement;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class TestTooltipCollectedCallback implements JadeTooltipCollectedCallback {
 
@@ -21,8 +22,8 @@ public class TestTooltipCollectedCallback implements JadeTooltipCollectedCallbac
             String lineMsg = "";
             List<IElement> elements = iTooltip.get(jadeIndex, IElement.Align.LEFT);
             for (IElement element : elements) {
-                if (element instanceof TextElement textElement) {
-                    lineMsg += textElement.getMessage();
+                if (element instanceof TextElement textElement && textElement.getMessage() != null) {
+                        lineMsg += textElement.getMessage().getString();
                 }
             }
 
